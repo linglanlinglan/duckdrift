@@ -2061,7 +2061,8 @@
                 const dx = whirlpoolCenterX - gameState.duckX;
                 gameState.duckX += dx * 0.05;
             } else {
-                const baseDuckSpeed = 8;
+                const activeBuffs = getActiveBuffs();
+                const baseDuckSpeed = 8 * activeBuffs.speedBoost;
                 let moveX = 0;
 
                 if (keys.left || keys.right) {
