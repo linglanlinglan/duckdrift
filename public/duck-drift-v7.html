@@ -2636,12 +2636,14 @@
         }
 
         function endGame() {
+            console.log('[endGame] called');
             gameState.isRunning = false;
             if (gameState.animationFrame) {
                 cancelAnimationFrame(gameState.animationFrame);
             }
-            stopMusic();
+            try { stopMusic(); } catch(e) { console.error('[endGame] stopMusic error:', e); }
 
+            console.log('[endGame] setting texts');
             finalScoreText.textContent = gameState.score;
             finalCoinsText.textContent = gameState.coins;
 
@@ -2662,6 +2664,7 @@
                 factElement.style.display = 'none';
             }
 
+            console.log('[endGame] showing game over screen');
             // Show game over screen immediately
             renderLeaderboard();
             gameOverScreen.classList.remove('hidden');
