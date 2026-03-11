@@ -2593,17 +2593,23 @@
             return rank;
         }
 
-        function submitScore() {
+        async function submitScore() {
             const name = playerNameInput.value.trim() || 'Anonymous';
             const score = gameState.score;
 
-            leaderboard.push({ name, score, isNew: true });
-            leaderboard.sort((a, b) => b.score - a.score);
-            leaderboard = leaderboard.slice(0, MAX_LEADERBOARD_SIZE);
+            submitScoreBtn.disabled = true;
+            submitScoreBtn.textContent = 'Submitting...';
+
+            await insertScore(name, score);
+            await fetchLeaderboard();
+
+            // Mark the player's new entry
+            const playerEntry = leaderboard.find(e => e.name === name && e.score === score);
+            if (playerEntry) playerEntry.isNew = true;
 
             nameInputContainer.classList.add('hidden');
             top10Message.classList.add('hidden');
-            submitScoreBtn.disabled = true;
+            submitScoreBtn.textContent = 'Submit';
             yourRankInfo.textContent = '';
 
             renderLeaderboard();
