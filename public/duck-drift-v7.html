@@ -2284,7 +2284,7 @@
                     
                     if (c.effect === 'invincible') {
                         activePowerUps.invincible = true;
-                        activePowerUps.invincibleEnd = Date.now() + c.duration;
+                        activePowerUps.invincibleEnd = Date.now() + c.duration * getActiveBuffs().powerUpDuration;
                         addFloatingText(c.x, c.y - 20, '⭐ STAR POWER!', '#FFE66D', 1.2);
                     } else if (c.effect === 'extraLife') {
                         activePowerUps.extraLives++;
