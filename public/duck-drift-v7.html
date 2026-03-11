@@ -2169,7 +2169,7 @@
             const previousCount = gameState.obstacles.length;
             gameState.obstacles = gameState.obstacles.filter(obs => {
                 if (obs.y > CONFIG.canvasHeight + 50) {
-                    gameState.score += 10;
+                    gameState.score += Math.round(10 * getActiveBuffs().scoreMultiplier);
                     return false;
                 }
                 return true;
