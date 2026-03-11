@@ -1800,12 +1800,20 @@
 
         async function fetchLeaderboard() {
             try {
+                const controller = new AbortController();
+                const timeout = setTimeout(() => controller.abort(), 5000);
                 const res = await fetch(`${SUPABASE_URL}/rest/v1/leaderboard?select=player_name,score&order=score.desc&limit=10`, {
                     headers: {
                         'apikey': SUPABASE_ANON_KEY,
                         'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                    }
+                    },
+                    signal: controller.signal
                 });
+                clearTimeout(timeout);
+                if (!res.ok) {
+                    console.error('Leaderboard fetch failed:', res.status);
+                    return;
+                }
                 const data = await res.json();
                 leaderboard = data.map(row => ({ name: row.player_name, score: row.score, isNew: false }));
             } catch (e) {
@@ -2627,7 +2635,7 @@
             speedIndicator.textContent = `⚡ ${gameState.speedMultiplier}x`;
         }
 
-        async function endGame() {
+        function endGame() {
             gameState.isRunning = false;
             if (gameState.animationFrame) {
                 cancelAnimationFrame(gameState.animationFrame);
@@ -2654,12 +2662,13 @@
                 factElement.style.display = 'none';
             }
 
-            // Fetch latest leaderboard from database
-            await fetchLeaderboard();
+            // Show game over screen immediately
+            renderLeaderboard();
+            gameOverScreen.classList.remove('hidden');
 
-            const qualifiesForTop10 = checkIfQualifiesForTop10(gameState.score);
-
-            if (qualifiesForTop10) {
+            // Check qualification with current local leaderboard first
+            const qualifiesLocal = checkIfQualifiesForTop10(gameState.score);
+            if (qualifiesLocal) {
                 nameInputContainer.classList.remove('hidden');
                 top10Message.classList.remove('hidden');
                 playerNameInput.value = '';
@@ -2677,8 +2686,27 @@
                 }
             }
 
-            renderLeaderboard();
-            gameOverScreen.classList.remove('hidden');
+            // Fetch latest leaderboard in background and update
+            fetchLeaderboard().then(() => {
+                const qualifiesForTop10 = checkIfQualifiesForTop10(gameState.score);
+                if (qualifiesForTop10) {
+                    nameInputContainer.classList.remove('hidden');
+                    top10Message.classList.remove('hidden');
+                    if (!playerNameInput.value) playerNameInput.focus();
+                    submitScoreBtn.disabled = false;
+                    yourRankInfo.textContent = '';
+                } else {
+                    nameInputContainer.classList.add('hidden');
+                    top10Message.classList.add('hidden');
+                    const rank = getPlayerRank(gameState.score);
+                    if (rank > MAX_LEADERBOARD_SIZE && leaderboard.length > 0) {
+                        yourRankInfo.textContent = `Your rank: #${rank}`;
+                    } else {
+                        yourRankInfo.textContent = '';
+                    }
+                }
+                renderLeaderboard();
+            });
         }
 
         function checkIfQualifiesForTop10(score) {
