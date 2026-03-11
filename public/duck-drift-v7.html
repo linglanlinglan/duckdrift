@@ -2059,14 +2059,14 @@
                 gameState.duckX += moveX;
             }
 
-            // Clamp to canvas bounds (allow full width, no river edge restriction)
+            // Clamp to canvas bounds - hard stop, no bounce
             const canvasMinX = padding;
             const canvasMaxX = CONFIG.canvasWidth - padding;
-            const clampedX = Math.max(canvasMinX, Math.min(canvasMaxX, gameState.duckX));
-            if (clampedX !== gameState.duckX) {
+            gameState.duckX = Math.max(canvasMinX, Math.min(canvasMaxX, gameState.duckX));
+            // Kill velocity at edges
+            if (gameState.duckX <= canvasMinX || gameState.duckX >= canvasMaxX) {
                 gameState.slipVelocity = 0;
             }
-            gameState.duckX = clampedX;
 
             // Grass/riverbank penalty: slow down + damage after 1.5 seconds
             const onGrass = gameState.duckX < minX || gameState.duckX > maxX;
