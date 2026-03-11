@@ -2433,7 +2433,7 @@
         }
 
         function checkCollision() {
-            const duckRadius = CONFIG.duckSize / 2 - 5;
+            const duckRadius = (CONFIG.duckSize / 2 - 5) * getActiveBuffs().smallerHitbox;
 
             for (const obs of gameState.obstacles) {
                 // Non-fatal obstacles
