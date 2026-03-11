@@ -2616,6 +2616,7 @@
             if (gameState.animationFrame) {
                 cancelAnimationFrame(gameState.animationFrame);
             }
+            stopMusic();
 
             finalScoreText.textContent = gameState.score;
             finalCoinsText.textContent = gameState.coins;
