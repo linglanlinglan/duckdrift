@@ -3597,9 +3597,12 @@
                 if (isSelected) div.classList.add('selected');
                 if (!isUnlocked) div.classList.add('locked');
                 
+                const buffText = item.buff ? item.buffDesc : '';
+                
                 div.innerHTML = `
                     <span class="item-icon">${item.icon}</span>
                     <span class="item-name">${item.name}</span>
+                    ${buffText ? `<span style="font-size:9px;color:#4ECDC4;display:block;margin-top:2px;">${buffText}</span>` : ''}
                     ${!isUnlocked ? `<span class="unlock-req">${item.unlockAt}m</span>` : ''}
                 `;
                 
