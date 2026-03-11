@@ -1259,6 +1259,23 @@
             trail: 'none'
         };
         
+        // Get combined buffs from all equipped cosmetics
+        function getActiveBuffs() {
+            const buffs = { scoreMultiplier: 1, coinBonus: 1, speedBoost: 1, smallerHitbox: 1, magnetRange: 1, powerUpDuration: 1, extraStartLife: 0 };
+            const skin = DUCK_SKINS.find(s => s.id === playerCustomization.skin);
+            const hat = DUCK_HATS.find(h => h.id === playerCustomization.hat);
+            const trail = DUCK_TRAILS.find(t => t.id === playerCustomization.trail);
+            [skin, hat, trail].forEach(item => {
+                if (item && item.buff) {
+                    Object.keys(item.buff).forEach(key => {
+                        if (key === 'extraStartLife') buffs[key] += item.buff[key];
+                        else buffs[key] *= item.buff[key];
+                    });
+                }
+            });
+            return buffs;
+        }
+
         // Trail particles
         let trailParticles = [];
         
