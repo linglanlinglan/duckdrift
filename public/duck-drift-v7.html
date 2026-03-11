@@ -3247,11 +3247,12 @@
             }
         }
         
-        function drawHat(x, y, size) {
+        function drawHat(x, y, size, c) {
+            c = c || ctx;
             const hat = playerCustomization.hat;
             const headY = y - size * 0.35;
             
-            ctx.save();
+            c.save();
             
             switch(hat) {
                 case 'crown':
