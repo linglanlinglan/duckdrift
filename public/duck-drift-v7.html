@@ -2291,7 +2291,7 @@
                         addFloatingText(c.x, c.y - 20, '❤️ +1 LIFE!', '#FF6B6B', 1.2);
                     } else if (c.effect === 'slowmo') {
                         activePowerUps.slowmo = true;
-                        activePowerUps.slowmoEnd = Date.now() + c.duration;
+                        activePowerUps.slowmoEnd = Date.now() + c.duration * getActiveBuffs().powerUpDuration;
                         addFloatingText(c.x, c.y - 20, '⚡ SLOW-MO!', '#00D4FF', 1.2);
                     }
                     
