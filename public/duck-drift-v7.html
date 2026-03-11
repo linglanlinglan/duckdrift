@@ -1969,10 +1969,16 @@
             
             // Initialize audio on first user interaction
             document.addEventListener('click', () => {
-                if (!audioCtx) initAudio();
+                if (!audioCtx) {
+                    initAudio();
+                    playMusic('menu');
+                }
             }, { once: true });
             document.addEventListener('touchstart', () => {
-                if (!audioCtx) initAudio();
+                if (!audioCtx) {
+                    initAudio();
+                    playMusic('menu');
+                }
             }, { once: true });
         }
 
