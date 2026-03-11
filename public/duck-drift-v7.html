@@ -1710,10 +1710,49 @@
         const previewCanvas = document.getElementById('previewCanvas');
         const previewCtx = previewCanvas ? previewCanvas.getContext('2d') : null;
 
+        // Supabase config
+        const SUPABASE_URL = 'https://zpxtnipsflcyiullrhvh.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpweHRuaXBzZmxjeWl1bGxyaHZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxOTkyOTQsImV4cCI6MjA4ODc3NTI5NH0.grVknkuYxk9X6d7wMm860nc-NzEf6gnEE4tlG1XHYXo';
+
+        async function fetchLeaderboard() {
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/leaderboard?select=player_name,score&order=score.desc&limit=10`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                const data = await res.json();
+                leaderboard = data.map(row => ({ name: row.player_name, score: row.score, isNew: false }));
+            } catch (e) {
+                console.error('Failed to fetch leaderboard:', e);
+            }
+        }
+
+        async function insertScore(name, score) {
+            try {
+                await fetch(`${SUPABASE_URL}/rest/v1/leaderboard`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify({ player_name: name, score: score })
+                });
+            } catch (e) {
+                console.error('Failed to insert score:', e);
+            }
+        }
+
         // High Score and Leaderboard
         let highScore = 0;
         let leaderboard = [];
         const MAX_LEADERBOARD_SIZE = 10;
+
+        // Load leaderboard on start
+        fetchLeaderboard();
 
         // Input State
         let keys = { left: false, right: false };
@@ -2486,18 +2525,14 @@
             speedIndicator.textContent = `⚡ ${gameState.speedMultiplier}x`;
         }
 
-        function endGame() {
+        async function endGame() {
             gameState.isRunning = false;
             if (gameState.animationFrame) {
                 cancelAnimationFrame(gameState.animationFrame);
             }
 
-            hud.classList.add('hidden');
-            speedIndicator.classList.add('hidden');
-            slipperyIndicator.classList.add('hidden');
-            whirlpoolIndicator.classList.add('hidden');
-
-            finalScore.textContent = gameState.score;
+            finalScoreText.textContent = gameState.score;
+            finalCoinsText.textContent = gameState.coins;
 
             if (gameState.score > highScore) {
                 highScore = gameState.score;
@@ -2515,6 +2550,9 @@
             } else {
                 factElement.style.display = 'none';
             }
+
+            // Fetch latest leaderboard from database
+            await fetchLeaderboard();
 
             const qualifiesForTop10 = checkIfQualifiesForTop10(gameState.score);
 
@@ -2554,17 +2592,23 @@
             return rank;
         }
 
-        function submitScore() {
+        async function submitScore() {
             const name = playerNameInput.value.trim() || 'Anonymous';
             const score = gameState.score;
 
-            leaderboard.push({ name, score, isNew: true });
-            leaderboard.sort((a, b) => b.score - a.score);
-            leaderboard = leaderboard.slice(0, MAX_LEADERBOARD_SIZE);
+            submitScoreBtn.disabled = true;
+            submitScoreBtn.textContent = 'Submitting...';
+
+            await insertScore(name, score);
+            await fetchLeaderboard();
+
+            // Mark the player's new entry
+            const playerEntry = leaderboard.find(e => e.name === name && e.score === score);
+            if (playerEntry) playerEntry.isNew = true;
 
             nameInputContainer.classList.add('hidden');
             top10Message.classList.add('hidden');
-            submitScoreBtn.disabled = true;
+            submitScoreBtn.textContent = 'Submit';
             yourRankInfo.textContent = '';
 
             renderLeaderboard();
