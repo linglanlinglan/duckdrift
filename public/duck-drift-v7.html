@@ -2024,7 +2024,17 @@
                 soundEnabled = !soundEnabled;
                 soundToggle.textContent = soundEnabled ? '🔊' : '🔇';
                 soundToggle.classList.toggle('muted', !soundEnabled);
-                if (soundEnabled) playSound('quack');
+                if (soundEnabled) {
+                    playSound('quack');
+                    // Resume music based on current screen
+                    if (!mainMenuScreen.classList.contains('hidden')) {
+                        playMusic('menu');
+                    } else if (gameState.isRunning) {
+                        playMusic('gameplay');
+                    }
+                } else {
+                    updateMusicMute();
+                }
             });
             
             // Initialize customization grids
