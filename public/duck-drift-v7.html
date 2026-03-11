@@ -2719,47 +2719,6 @@
             }
         }
 
-            // Grass/riverbank penalty: slow down + damage after 1.5 seconds
-            const onGrass = gameState.duckX < minX || gameState.duckX > maxX;
-            if (onGrass) {
-                gameState.onGrassTime += 16; // ~1 frame at 60fps
-                // Slow the duck down on grass (halve effective speed)
-                gameState.duckX = gameState.lastDuckX + (gameState.duckX - gameState.lastDuckX) * 0.4;
-                // Clamp again after slowdown
-                gameState.duckX = Math.max(canvasMinX, Math.min(canvasMaxX, gameState.duckX));
-                // Visual warning: mud particles
-                if (Math.random() < 0.3) {
-                    addSplashParticles(gameState.duckX, CONFIG.duckY + 15, 2, 'rgba(101,67,33,0.6)');
-                }
-                // After 1.5s on grass, take damage every 0.8s
-                if (gameState.onGrassTime > 1500) {
-                    gameState.grassDamageTimer += 16;
-                    if (gameState.grassDamageTimer > 800) {
-                        gameState.grassDamageTimer = 0;
-                        if (activePowerUps.extraLives > 0) {
-                            activePowerUps.extraLives--;
-                            playSound('nearMiss');
-                            addScreenShake(6);
-                            addFloatingText(gameState.duckX, CONFIG.duckY - 40, '🌿 GET BACK!', '#FF6B6B', 1.1);
-                        } else {
-                            gameState.lastHitObstacle = { shape: 'grass' };
-                            playSound('hit');
-                            addScreenShake(12);
-                            addFloatingText(gameState.duckX, CONFIG.duckY - 40, '🌿 STUCK!', '#FF6B6B', 1.2);
-                            endGame();
-                            return;
-                        }
-                    }
-                } else if (gameState.onGrassTime > 800) {
-                    // Warning text once
-                    if (gameState.onGrassTime < 820) {
-                        addFloatingText(gameState.duckX, CONFIG.duckY - 30, '⚠️ GET BACK!', '#FFD93D', 1);
-                    }
-                }
-            } else {
-                gameState.onGrassTime = 0;
-                gameState.grassDamageTimer = 0;
-            }
 
         function drawObstacle(obs) {
             ctx.save();
