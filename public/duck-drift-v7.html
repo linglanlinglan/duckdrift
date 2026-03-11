@@ -1992,12 +1992,14 @@
             // Clear collectibles and reset power-ups
             collectibles = [];
             lastCollectibleSpawn = Date.now();
+            const buffs = getActiveBuffs();
             activePowerUps = {
                 invincible: false,
                 invincibleEnd: 0,
                 slowmo: false,
                 slowmoEnd: 0,
-                extraLives: 0
+                extraLives: buffs.extraStartLife
+            };
             };
             
             // Play start quack
