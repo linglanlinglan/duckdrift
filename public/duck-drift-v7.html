@@ -2525,18 +2525,14 @@
             speedIndicator.textContent = `⚡ ${gameState.speedMultiplier}x`;
         }
 
-        function endGame() {
+        async function endGame() {
             gameState.isRunning = false;
             if (gameState.animationFrame) {
                 cancelAnimationFrame(gameState.animationFrame);
             }
 
-            hud.classList.add('hidden');
-            speedIndicator.classList.add('hidden');
-            slipperyIndicator.classList.add('hidden');
-            whirlpoolIndicator.classList.add('hidden');
-
-            finalScore.textContent = gameState.score;
+            finalScoreText.textContent = gameState.score;
+            finalCoinsText.textContent = gameState.coins;
 
             if (gameState.score > highScore) {
                 highScore = gameState.score;
@@ -2554,6 +2550,9 @@
             } else {
                 factElement.style.display = 'none';
             }
+
+            // Fetch latest leaderboard from database
+            await fetchLeaderboard();
 
             const qualifiesForTop10 = checkIfQualifiesForTop10(gameState.score);
 
