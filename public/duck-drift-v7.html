@@ -1299,11 +1299,95 @@
         let audioCtx = null;
         let soundEnabled = true;
         
+        // Background music system
+        const bgMusic = {
+            menu: null,
+            gameplay: null,
+            current: null,
+            volume: 0.3,
+            fadeInterval: null
+        };
+        
         function initAudio() {
             try {
                 audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             } catch (e) {
                 console.log('Web Audio not supported');
+            }
+            
+            // Initialize background music
+            if (!bgMusic.menu) {
+                bgMusic.menu = new Audio('audio/menu-music.mp3');
+                bgMusic.menu.loop = true;
+                bgMusic.menu.volume = 0;
+                
+                bgMusic.gameplay = new Audio('audio/gameplay-music.mp3');
+                bgMusic.gameplay.loop = true;
+                bgMusic.gameplay.volume = 0;
+            }
+        }
+        
+        function fadeMusic(audioElement, targetVolume, duration = 800) {
+            if (!audioElement) return;
+            const steps = 20;
+            const stepTime = duration / steps;
+            const startVolume = audioElement.volume;
+            const volumeDiff = targetVolume - startVolume;
+            let step = 0;
+            
+            const fade = setInterval(() => {
+                step++;
+                const newVol = startVolume + (volumeDiff * (step / steps));
+                audioElement.volume = Math.max(0, Math.min(1, newVol));
+                if (step >= steps) {
+                    clearInterval(fade);
+                    if (targetVolume === 0) {
+                        audioElement.pause();
+                    }
+                }
+            }, stepTime);
+        }
+        
+        function playMusic(type) {
+            if (!soundEnabled) return;
+            
+            // Initialize audio if needed
+            if (!bgMusic.menu) initAudio();
+            if (!bgMusic.menu) return;
+            
+            const target = type === 'menu' ? bgMusic.menu : bgMusic.gameplay;
+            const other = type === 'menu' ? bgMusic.gameplay : bgMusic.menu;
+            
+            if (bgMusic.current === target && !target.paused) return;
+            
+            // Fade out current
+            if (other && !other.paused) {
+                fadeMusic(other, 0, 600);
+            }
+            
+            // Start and fade in new track
+            target.currentTime = target.currentTime || 0;
+            target.volume = 0;
+            target.play().then(() => {
+                fadeMusic(target, bgMusic.volume, 800);
+            }).catch(e => {
+                console.log('Music autoplay blocked, will start on interaction');
+            });
+            
+            bgMusic.current = target;
+        }
+        
+        function stopMusic(fadeDuration = 600) {
+            if (bgMusic.menu && !bgMusic.menu.paused) fadeMusic(bgMusic.menu, 0, fadeDuration);
+            if (bgMusic.gameplay && !bgMusic.gameplay.paused) fadeMusic(bgMusic.gameplay, 0, fadeDuration);
+            bgMusic.current = null;
+        }
+        
+        function updateMusicMute() {
+            if (!soundEnabled) {
+                if (bgMusic.menu) { bgMusic.menu.volume = 0; bgMusic.menu.pause(); }
+                if (bgMusic.gameplay) { bgMusic.gameplay.volume = 0; bgMusic.gameplay.pause(); }
+                bgMusic.current = null;
             }
         }
         
