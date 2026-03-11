@@ -3256,146 +3256,120 @@
             
             switch(hat) {
                 case 'crown':
-                    // Golden crown
-                    ctx.fillStyle = '#FFD700';
-                    ctx.beginPath();
-                    ctx.moveTo(x - size * 0.25, headY - size * 0.15);
-                    ctx.lineTo(x - size * 0.2, headY - size * 0.35);
-                    ctx.lineTo(x - size * 0.1, headY - size * 0.25);
-                    ctx.lineTo(x, headY - size * 0.4);
-                    ctx.lineTo(x + size * 0.1, headY - size * 0.25);
-                    ctx.lineTo(x + size * 0.2, headY - size * 0.35);
-                    ctx.lineTo(x + size * 0.25, headY - size * 0.15);
-                    ctx.closePath();
-                    ctx.fill();
-                    // Jewels
-                    ctx.fillStyle = '#E74C3C';
-                    ctx.beginPath();
-                    ctx.arc(x, headY - size * 0.25, 3, 0, Math.PI * 2);
-                    ctx.fill();
+                    c.fillStyle = '#FFD700';
+                    c.beginPath();
+                    c.moveTo(x - size * 0.25, headY - size * 0.15);
+                    c.lineTo(x - size * 0.2, headY - size * 0.35);
+                    c.lineTo(x - size * 0.1, headY - size * 0.25);
+                    c.lineTo(x, headY - size * 0.4);
+                    c.lineTo(x + size * 0.1, headY - size * 0.25);
+                    c.lineTo(x + size * 0.2, headY - size * 0.35);
+                    c.lineTo(x + size * 0.25, headY - size * 0.15);
+                    c.closePath();
+                    c.fill();
+                    c.fillStyle = '#E74C3C';
+                    c.beginPath();
+                    c.arc(x, headY - size * 0.25, 3, 0, Math.PI * 2);
+                    c.fill();
                     break;
-                    
                 case 'tophat':
-                    // Top hat
-                    ctx.fillStyle = '#1a1a1a';
-                    // Brim
-                    ctx.beginPath();
-                    ctx.ellipse(x, headY - size * 0.15, size * 0.3, size * 0.08, 0, 0, Math.PI * 2);
-                    ctx.fill();
-                    // Top
-                    ctx.fillRect(x - size * 0.15, headY - size * 0.45, size * 0.3, size * 0.3);
-                    // Band
-                    ctx.fillStyle = '#C0392B';
-                    ctx.fillRect(x - size * 0.15, headY - size * 0.25, size * 0.3, size * 0.05);
+                    c.fillStyle = '#1a1a1a';
+                    c.beginPath();
+                    c.ellipse(x, headY - size * 0.15, size * 0.3, size * 0.08, 0, 0, Math.PI * 2);
+                    c.fill();
+                    c.fillRect(x - size * 0.15, headY - size * 0.45, size * 0.3, size * 0.3);
+                    c.fillStyle = '#C0392B';
+                    c.fillRect(x - size * 0.15, headY - size * 0.25, size * 0.3, size * 0.05);
                     break;
-                    
                 case 'cap':
-                    // Baseball cap
-                    ctx.fillStyle = '#3498DB';
-                    ctx.beginPath();
-                    ctx.arc(x, headY - size * 0.1, size * 0.22, Math.PI, 0, false);
-                    ctx.fill();
-                    // Brim
-                    ctx.fillStyle = '#2980B9';
-                    ctx.beginPath();
-                    ctx.ellipse(x + size * 0.15, headY - size * 0.08, size * 0.2, size * 0.06, 0.3, 0, Math.PI * 2);
-                    ctx.fill();
+                    c.fillStyle = '#3498DB';
+                    c.beginPath();
+                    c.arc(x, headY - size * 0.1, size * 0.22, Math.PI, 0, false);
+                    c.fill();
+                    c.fillStyle = '#2980B9';
+                    c.beginPath();
+                    c.ellipse(x + size * 0.15, headY - size * 0.08, size * 0.2, size * 0.06, 0.3, 0, Math.PI * 2);
+                    c.fill();
                     break;
-                    
                 case 'party':
-                    // Party hat
-                    ctx.fillStyle = '#9B59B6';
-                    ctx.beginPath();
-                    ctx.moveTo(x, headY - size * 0.5);
-                    ctx.lineTo(x - size * 0.2, headY - size * 0.1);
-                    ctx.lineTo(x + size * 0.2, headY - size * 0.1);
-                    ctx.closePath();
-                    ctx.fill();
-                    // Stripes
-                    ctx.strokeStyle = '#F1C40F';
-                    ctx.lineWidth = 2;
-                    ctx.beginPath();
-                    ctx.moveTo(x - size * 0.1, headY - size * 0.2);
-                    ctx.lineTo(x + size * 0.05, headY - size * 0.35);
-                    ctx.stroke();
-                    // Pom pom
-                    ctx.fillStyle = '#E74C3C';
-                    ctx.beginPath();
-                    ctx.arc(x, headY - size * 0.5, 5, 0, Math.PI * 2);
-                    ctx.fill();
+                    c.fillStyle = '#9B59B6';
+                    c.beginPath();
+                    c.moveTo(x, headY - size * 0.5);
+                    c.lineTo(x - size * 0.2, headY - size * 0.1);
+                    c.lineTo(x + size * 0.2, headY - size * 0.1);
+                    c.closePath();
+                    c.fill();
+                    c.strokeStyle = '#F1C40F';
+                    c.lineWidth = 2;
+                    c.beginPath();
+                    c.moveTo(x - size * 0.1, headY - size * 0.2);
+                    c.lineTo(x + size * 0.05, headY - size * 0.35);
+                    c.stroke();
+                    c.fillStyle = '#E74C3C';
+                    c.beginPath();
+                    c.arc(x, headY - size * 0.5, 5, 0, Math.PI * 2);
+                    c.fill();
                     break;
-                    
                 case 'pirate':
-                    // Pirate bandana
-                    ctx.fillStyle = '#C0392B';
-                    ctx.beginPath();
-                    ctx.arc(x, headY - size * 0.05, size * 0.25, Math.PI, 0, false);
-                    ctx.fill();
-                    // Knot
-                    ctx.fillStyle = '#922B21';
-                    ctx.beginPath();
-                    ctx.arc(x + size * 0.2, headY - size * 0.05, 4, 0, Math.PI * 2);
-                    ctx.fill();
-                    // Skull
-                    ctx.fillStyle = '#FFF';
-                    ctx.beginPath();
-                    ctx.arc(x, headY - size * 0.15, 5, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.fillStyle = '#000';
-                    ctx.beginPath();
-                    ctx.arc(x - 2, headY - size * 0.15, 1, 0, Math.PI * 2);
-                    ctx.arc(x + 2, headY - size * 0.15, 1, 0, Math.PI * 2);
-                    ctx.fill();
+                    c.fillStyle = '#C0392B';
+                    c.beginPath();
+                    c.arc(x, headY - size * 0.05, size * 0.25, Math.PI, 0, false);
+                    c.fill();
+                    c.fillStyle = '#922B21';
+                    c.beginPath();
+                    c.arc(x + size * 0.2, headY - size * 0.05, 4, 0, Math.PI * 2);
+                    c.fill();
+                    c.fillStyle = '#FFF';
+                    c.beginPath();
+                    c.arc(x, headY - size * 0.15, 5, 0, Math.PI * 2);
+                    c.fill();
+                    c.fillStyle = '#000';
+                    c.beginPath();
+                    c.arc(x - 2, headY - size * 0.15, 1, 0, Math.PI * 2);
+                    c.arc(x + 2, headY - size * 0.15, 1, 0, Math.PI * 2);
+                    c.fill();
                     break;
-                    
                 case 'wizard':
-                    // Wizard hat
-                    ctx.fillStyle = '#8E44AD';
-                    ctx.beginPath();
-                    ctx.moveTo(x, headY - size * 0.6);
-                    ctx.lineTo(x - size * 0.25, headY - size * 0.1);
-                    ctx.lineTo(x + size * 0.25, headY - size * 0.1);
-                    ctx.closePath();
-                    ctx.fill();
-                    // Brim
-                    ctx.beginPath();
-                    ctx.ellipse(x, headY - size * 0.1, size * 0.3, size * 0.08, 0, 0, Math.PI * 2);
-                    ctx.fill();
-                    // Stars
-                    ctx.fillStyle = '#F1C40F';
-                    ctx.font = '8px Arial';
-                    ctx.fillText('★', x - 5, headY - size * 0.3);
-                    ctx.fillText('★', x + 3, headY - size * 0.4);
+                    c.fillStyle = '#8E44AD';
+                    c.beginPath();
+                    c.moveTo(x, headY - size * 0.6);
+                    c.lineTo(x - size * 0.25, headY - size * 0.1);
+                    c.lineTo(x + size * 0.25, headY - size * 0.1);
+                    c.closePath();
+                    c.fill();
+                    c.beginPath();
+                    c.ellipse(x, headY - size * 0.1, size * 0.3, size * 0.08, 0, 0, Math.PI * 2);
+                    c.fill();
+                    c.fillStyle = '#F1C40F';
+                    c.font = '8px Arial';
+                    c.fillText('★', x - 5, headY - size * 0.3);
+                    c.fillText('★', x + 3, headY - size * 0.4);
                     break;
-                    
                 case 'alien':
-                    // Alien antennae
-                    ctx.strokeStyle = '#2ECC71';
-                    ctx.lineWidth = 2;
-                    ctx.beginPath();
-                    ctx.moveTo(x - size * 0.1, headY - size * 0.15);
-                    ctx.quadraticCurveTo(x - size * 0.15, headY - size * 0.4, x - size * 0.08, headY - size * 0.45);
-                    ctx.stroke();
-                    ctx.beginPath();
-                    ctx.moveTo(x + size * 0.1, headY - size * 0.15);
-                    ctx.quadraticCurveTo(x + size * 0.15, headY - size * 0.4, x + size * 0.08, headY - size * 0.45);
-                    ctx.stroke();
-                    // Antenna balls
-                    ctx.fillStyle = '#2ECC71';
-                    ctx.beginPath();
-                    ctx.arc(x - size * 0.08, headY - size * 0.45, 4, 0, Math.PI * 2);
-                    ctx.arc(x + size * 0.08, headY - size * 0.45, 4, 0, Math.PI * 2);
-                    ctx.fill();
-                    // Glow
-                    ctx.fillStyle = `rgba(46, 204, 113, ${0.3 + Math.sin(Date.now() * 0.01) * 0.2})`;
-                    ctx.beginPath();
-                    ctx.arc(x - size * 0.08, headY - size * 0.45, 6, 0, Math.PI * 2);
-                    ctx.arc(x + size * 0.08, headY - size * 0.45, 6, 0, Math.PI * 2);
-                    ctx.fill();
+                    c.strokeStyle = '#2ECC71';
+                    c.lineWidth = 2;
+                    c.beginPath();
+                    c.moveTo(x - size * 0.1, headY - size * 0.15);
+                    c.quadraticCurveTo(x - size * 0.15, headY - size * 0.4, x - size * 0.08, headY - size * 0.45);
+                    c.stroke();
+                    c.beginPath();
+                    c.moveTo(x + size * 0.1, headY - size * 0.15);
+                    c.quadraticCurveTo(x + size * 0.15, headY - size * 0.4, x + size * 0.08, headY - size * 0.45);
+                    c.stroke();
+                    c.fillStyle = '#2ECC71';
+                    c.beginPath();
+                    c.arc(x - size * 0.08, headY - size * 0.45, 4, 0, Math.PI * 2);
+                    c.arc(x + size * 0.08, headY - size * 0.45, 4, 0, Math.PI * 2);
+                    c.fill();
+                    c.fillStyle = `rgba(46, 204, 113, ${0.3 + Math.sin(Date.now() * 0.01) * 0.2})`;
+                    c.beginPath();
+                    c.arc(x - size * 0.08, headY - size * 0.45, 6, 0, Math.PI * 2);
+                    c.arc(x + size * 0.08, headY - size * 0.45, 6, 0, Math.PI * 2);
+                    c.fill();
                     break;
             }
             
-            ctx.restore();
+            c.restore();
         }
         
         function addTrailParticle(x, y) {
