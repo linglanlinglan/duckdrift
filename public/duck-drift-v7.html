@@ -2189,7 +2189,7 @@
                     const idx = gameState.obstacles.indexOf(hitObstacle);
                     if (idx > -1) {
                         gameState.obstacles.splice(idx, 1);
-                        gameState.score += 15;
+                        gameState.score += Math.round(15 * getActiveBuffs().scoreMultiplier);
                         updateScore();
                         playSound('combo');
                         addFloatingText(gameState.duckX, CONFIG.duckY - 40, 'DESTROYED!', '#FFE66D', 1.1);
