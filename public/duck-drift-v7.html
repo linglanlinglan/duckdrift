@@ -2655,43 +2655,14 @@
             ctx.restore();
 
             // Update effect indicators
-            const invincibleIndicator = document.getElementById('invincibleIndicator');
-            const slowmoIndicator = document.getElementById('slowmoIndicator');
+            const toggleHidden = (el, show) => el.classList.toggle('hidden', !show);
+            toggleHidden(slipperyIndicator, gameState.isSlippery);
+            toggleHidden(whirlpoolIndicator, gameState.isBeingPulled);
+            toggleHidden(document.getElementById('invincibleIndicator'), activePowerUps.invincible);
+            toggleHidden(document.getElementById('slowmoIndicator'), activePowerUps.slowmo);
             const livesIndicator = document.getElementById('livesIndicator');
-            const livesCount = document.getElementById('livesCount');
-            
-            // Status effects (slippery, whirlpool)
-            if (gameState.isSlippery) {
-                slipperyIndicator.classList.remove('hidden');
-            } else {
-                slipperyIndicator.classList.add('hidden');
-            }
-            
-            if (gameState.isBeingPulled) {
-                whirlpoolIndicator.classList.remove('hidden');
-            } else {
-                whirlpoolIndicator.classList.add('hidden');
-            }
-            
-            // Power-up indicators
-            if (activePowerUps.invincible) {
-                invincibleIndicator.classList.remove('hidden');
-            } else {
-                invincibleIndicator.classList.add('hidden');
-            }
-            
-            if (activePowerUps.slowmo) {
-                slowmoIndicator.classList.remove('hidden');
-            } else {
-                slowmoIndicator.classList.add('hidden');
-            }
-            
-            if (activePowerUps.extraLives > 0) {
-                livesIndicator.classList.remove('hidden');
-                livesCount.textContent = activePowerUps.extraLives;
-            } else {
-                livesIndicator.classList.add('hidden');
-            }
+            toggleHidden(livesIndicator, activePowerUps.extraLives > 0);
+            if (activePowerUps.extraLives > 0) document.getElementById('livesCount').textContent = activePowerUps.extraLives;
         }
         
         // Draw collectibles
