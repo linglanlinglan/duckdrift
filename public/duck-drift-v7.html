@@ -2055,8 +2055,10 @@
                 gameState.duckX += moveX;
             }
 
-            // Clamp to river bounds and stop any slip velocity if hitting edge
-            const clampedX = Math.max(minX, Math.min(maxX, gameState.duckX));
+            // Clamp to canvas bounds (allow full width, no river edge restriction)
+            const canvasMinX = padding;
+            const canvasMaxX = CONFIG.canvasWidth - padding;
+            const clampedX = Math.max(canvasMinX, Math.min(canvasMaxX, gameState.duckX));
             if (clampedX !== gameState.duckX) {
                 gameState.slipVelocity = 0;
             }
