@@ -2644,8 +2644,7 @@
             try { stopMusic(); } catch(e) { console.error('[endGame] stopMusic error:', e); }
 
             console.log('[endGame] setting texts');
-            finalScoreText.textContent = gameState.score;
-            finalCoinsText.textContent = gameState.coins;
+            finalScore.textContent = gameState.score;
 
             if (gameState.score > highScore) {
                 highScore = gameState.score;
