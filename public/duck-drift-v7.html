@@ -1710,10 +1710,49 @@
         const previewCanvas = document.getElementById('previewCanvas');
         const previewCtx = previewCanvas ? previewCanvas.getContext('2d') : null;
 
+        // Supabase config
+        const SUPABASE_URL = 'https://zpxtnipsflcyiullrhvh.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpweHRuaXBzZmxjeWl1bGxyaHZoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMxOTkyOTQsImV4cCI6MjA4ODc3NTI5NH0.grVknkuYxk9X6d7wMm860nc-NzEf6gnEE4tlG1XHYXo';
+
+        async function fetchLeaderboard() {
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/leaderboard?select=player_name,score&order=score.desc&limit=10`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                    }
+                });
+                const data = await res.json();
+                leaderboard = data.map(row => ({ name: row.player_name, score: row.score, isNew: false }));
+            } catch (e) {
+                console.error('Failed to fetch leaderboard:', e);
+            }
+        }
+
+        async function insertScore(name, score) {
+            try {
+                await fetch(`${SUPABASE_URL}/rest/v1/leaderboard`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_ANON_KEY,
+                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify({ player_name: name, score: score })
+                });
+            } catch (e) {
+                console.error('Failed to insert score:', e);
+            }
+        }
+
         // High Score and Leaderboard
         let highScore = 0;
         let leaderboard = [];
         const MAX_LEADERBOARD_SIZE = 10;
+
+        // Load leaderboard on start
+        fetchLeaderboard();
 
         // Input State
         let keys = { left: false, right: false };
