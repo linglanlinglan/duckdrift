@@ -2276,9 +2276,10 @@
                     
                     // Apply effects
                     if (c.points) {
-                        gameState.score += c.points;
+                        const buffedPoints = Math.round(c.points * getActiveBuffs().coinBonus * getActiveBuffs().scoreMultiplier);
+                        gameState.score += buffedPoints;
                         updateScore();
-                        addFloatingText(c.x, c.y, `+${c.points}`, c.color, 1);
+                        addFloatingText(c.x, c.y, `+${buffedPoints}`, c.color, 1);
                     }
                     
                     if (c.effect === 'invincible') {
