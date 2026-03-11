@@ -3228,38 +3228,104 @@
                 ctx.fill();
             }
 
+            // Get current skin colors
+            const currentSkin = DUCK_SKINS.find(s => s.id === playerCustomization.skin) || DUCK_SKINS[0];
+            const colors = currentSkin.colors;
+
             // Draw duck sprite
             if (spritesLoaded && sprites.duck.complete && sprites.duck.naturalWidth > 0) {
                 const duckW = size * 2.8;
                 const duckH = size * 3.2;
-                ctx.drawImage(sprites.duck, x - duckW/2, y - duckH/2, duckW, duckH);
+                
+                // Apply skin color tint if not classic
+                if (playerCustomization.skin !== 'classic') {
+                    // Draw duck sprite to offscreen canvas for tinting
+                    const offCanvas = document.createElement('canvas');
+                    offCanvas.width = duckW;
+                    offCanvas.height = duckH;
+                    const offCtx = offCanvas.getContext('2d');
+                    offCtx.drawImage(sprites.duck, 0, 0, duckW, duckH);
+                    
+                    // Apply color overlay
+                    offCtx.globalCompositeOperation = 'source-atop';
+                    if (colors.rainbow) {
+                        const hue = (Date.now() * 0.1) % 360;
+                        offCtx.fillStyle = `hsla(${hue}, 80%, 60%, 0.6)`;
+                    } else if (colors.ghost) {
+                        offCtx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                    } else {
+                        offCtx.fillStyle = colors.body[1] + 'AA';
+                    }
+                    offCtx.fillRect(0, 0, duckW, duckH);
+                    
+                    // Draw tinted sprite
+                    if (colors.ghost) ctx.globalAlpha = 0.7;
+                    ctx.drawImage(offCanvas, x - duckW/2, y - duckH/2, duckW, duckH);
+                    if (colors.ghost) ctx.globalAlpha = 1;
+                } else {
+                    ctx.drawImage(sprites.duck, x - duckW/2, y - duckH/2, duckW, duckH);
+                }
+                
+                // Galaxy sparkle effect
+                if (colors.sparkle) {
+                    for (let i = 0; i < 3; i++) {
+                        const sx = x + (Math.random() - 0.5) * size;
+                        const sy = y + (Math.random() - 0.5) * size;
+                        ctx.fillStyle = `rgba(224, 64, 251, ${0.5 + Math.random() * 0.5})`;
+                        ctx.beginPath();
+                        ctx.arc(sx, sy, 1 + Math.random() * 2, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
             } else {
-                // Fallback: simple duck shape
-                ctx.fillStyle = '#FFD93D';
+                // Fallback: draw duck facing forward (beak pointing up)
+                const bodyGrad = ctx.createRadialGradient(x, y, 0, x, y, size / 2);
+                bodyGrad.addColorStop(0, colors.body[0]);
+                bodyGrad.addColorStop(0.7, colors.body[1]);
+                bodyGrad.addColorStop(1, colors.body[2]);
+                
+                if (colors.ghost) ctx.globalAlpha = 0.6;
+                
+                // Body
+                ctx.fillStyle = bodyGrad;
                 ctx.beginPath();
                 ctx.arc(x, y, size / 2, 0, Math.PI * 2);
                 ctx.fill();
                 
-                // Head
+                // Head (above body, toward top = forward)
+                ctx.fillStyle = colors.body[1];
                 ctx.beginPath();
                 ctx.arc(x, y - size * 0.35, size * 0.28, 0, Math.PI * 2);
                 ctx.fill();
                 
-                // Beak
-                ctx.fillStyle = '#E67E22';
+                // Beak pointing UP (forward)
+                ctx.fillStyle = colors.beak;
                 ctx.beginPath();
-                ctx.moveTo(x + size * 0.05, y - size * 0.35);
-                ctx.lineTo(x + size * 0.3, y - size * 0.32);
-                ctx.lineTo(x + size * 0.05, y - size * 0.25);
+                ctx.moveTo(x - size * 0.08, y - size * 0.55);
+                ctx.lineTo(x, y - size * 0.72);
+                ctx.lineTo(x + size * 0.08, y - size * 0.55);
                 ctx.closePath();
                 ctx.fill();
                 
-                // Eye
-                ctx.fillStyle = '#333';
+                // Eyes (side by side, looking forward)
+                ctx.fillStyle = colors.ghost ? '#666' : '#333';
                 ctx.beginPath();
-                ctx.arc(x - size * 0.02, y - size * 0.42, 3, 0, Math.PI * 2);
+                ctx.arc(x - size * 0.1, y - size * 0.4, 3, 0, Math.PI * 2);
+                ctx.arc(x + size * 0.1, y - size * 0.4, 3, 0, Math.PI * 2);
                 ctx.fill();
+                
+                // Eye shine
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.arc(x - size * 0.09, y - size * 0.42, 1.5, 0, Math.PI * 2);
+                ctx.arc(x + size * 0.11, y - size * 0.42, 1.5, 0, Math.PI * 2);
+                ctx.fill();
+                
+                if (colors.ghost) ctx.globalAlpha = 1;
             }
+            
+            // Draw hat on top of duck
+            drawHat(x, y, size);
 
             ctx.restore();
             
