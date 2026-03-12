@@ -1865,13 +1865,13 @@
             { type: 'oilslick', color: '#2c3e50', shadowColor: '#1a252f', shape: 'oilslick', unlockAt: 50 },
             
             // 100m+ - Fast fish
-            { type: 'fish', color: '#e74c3c', shadowColor: '#c0392b', shape: 'fish', speedMultiplier: 2.2, unlockAt: 100 },
+            { type: 'fish', color: '#e74c3c', shadowColor: '#c0392b', shape: 'fish', speedMultiplier: 1.6, unlockAt: 100 },
             
             // 150m+ - Crocodiles
             { type: 'crocodile', color: '#2E7D32', shadowColor: '#1B5E20', shape: 'crocodile', unlockAt: 150 },
             
             // 200m+ - Whirlpools
-            { type: 'whirlpool', color: '#1abc9c', shadowColor: '#16a085', shape: 'whirlpool', pullStrength: 3, pullRadius: 150, unlockAt: 200 },
+            { type: 'whirlpool', color: '#1abc9c', shadowColor: '#16a085', shape: 'whirlpool', pullStrength: 1.5, pullRadius: 100, unlockAt: 200 },
             
             // 250m+ - Beaver dams
             { type: 'beaverdam', color: '#8D6E63', shadowColor: '#5D4037', shape: 'beaverdam', unlockAt: 250 }
@@ -2207,7 +2207,7 @@
             } else if (gameState.isBeingPulled && gameState.activeWhirlpool) {
                 const whirlpoolCenterX = gameState.activeWhirlpool.x + gameState.activeWhirlpool.width / 2;
                 const dx = whirlpoolCenterX - gameState.duckX;
-                gameState.duckX += dx * 0.05;
+                gameState.duckX += dx * 0.025;
             } else {
                 const activeBuffs = getActiveBuffs();
                 const baseDuckSpeed = 8 * activeBuffs.speedBoost;
@@ -2490,9 +2490,14 @@
                 if (obs.type !== 'whirlpool') continue;
 
                 // Whirlpool is on screen if it's visible
-                if (obs.y > -obs.height && obs.y < CONFIG.canvasHeight) {
+                const whirlCenterX = obs.x + obs.width / 2;
+                const whirlCenterY = obs.y + obs.height / 2;
+                const duckCenterX = gameState.duckX;
+                const duckCenterY = gameState.duckY;
+                const dist = Math.sqrt((whirlCenterX - duckCenterX) ** 2 + (whirlCenterY - duckCenterY) ** 2);
+                if (dist < (obs.pullRadius || 100)) {
                     gameState.isBeingPulled = true;
-                    gameState.pullEndTime = Date.now() + 1000; // 1 second pull
+                    gameState.pullEndTime = Date.now() + 700; // 0.7 second pull
                     gameState.activeWhirlpool = obs;
                     playSound('whoosh');
                     addScreenShake(3);
