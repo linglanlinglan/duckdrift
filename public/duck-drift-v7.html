@@ -2490,9 +2490,14 @@
                 if (obs.type !== 'whirlpool') continue;
 
                 // Whirlpool is on screen if it's visible
-                if (obs.y > -obs.height && obs.y < CONFIG.canvasHeight) {
+                const whirlCenterX = obs.x + obs.width / 2;
+                const whirlCenterY = obs.y + obs.height / 2;
+                const duckCenterX = gameState.duckX;
+                const duckCenterY = gameState.duckY;
+                const dist = Math.sqrt((whirlCenterX - duckCenterX) ** 2 + (whirlCenterY - duckCenterY) ** 2);
+                if (dist < (obs.pullRadius || 100)) {
                     gameState.isBeingPulled = true;
-                    gameState.pullEndTime = Date.now() + 1000; // 1 second pull
+                    gameState.pullEndTime = Date.now() + 700; // 0.7 second pull
                     gameState.activeWhirlpool = obs;
                     playSound('whoosh');
                     addScreenShake(3);
