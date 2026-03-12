@@ -2207,7 +2207,7 @@
             } else if (gameState.isBeingPulled && gameState.activeWhirlpool) {
                 const whirlpoolCenterX = gameState.activeWhirlpool.x + gameState.activeWhirlpool.width / 2;
                 const dx = whirlpoolCenterX - gameState.duckX;
-                gameState.duckX += dx * 0.05;
+                gameState.duckX += dx * 0.025;
             } else {
                 const activeBuffs = getActiveBuffs();
                 const baseDuckSpeed = 8 * activeBuffs.speedBoost;
