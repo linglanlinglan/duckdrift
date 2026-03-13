@@ -2436,7 +2436,28 @@
         // Spawn a collectible/power-up
         function spawnCollectible() {
             for (const powerUp of POWER_UP_TYPES) {
-                if (Math.random() < powerUp.spawnChance) {
+                let spawnChance = powerUp.spawnChance;
+
+                // Pity system: boost spawn chance if it's been too long
+                if (powerUp.effect === 'extraLife') {
+                    const distSinceHeart = gameState.score - lastHeartDistance;
+                    if (distSinceHeart > HEART_PITY_DISTANCE) {
+                        spawnChance = 0.12;
+                    } else if (distSinceHeart > HEART_PITY_DISTANCE * 0.7) {
+                        spawnChance = 0.04;
+                    }
+                }
+                if (powerUp.effect === 'invincible') {
+                    const distSinceStar = gameState.score - lastStarDistance;
+                    if (distSinceStar > STAR_PITY_DISTANCE) {
+                        spawnChance = 0.08;
+                    }
+                }
+
+                if (Math.random() < spawnChance) {
+                    if (powerUp.effect === 'extraLife') lastHeartDistance = gameState.score;
+                    if (powerUp.effect === 'invincible') lastStarDistance = gameState.score;
+
                     const size = 35;
                     const x = CONFIG.riverLeft + 30 + Math.random() * (CONFIG.riverRight - CONFIG.riverLeft - 60);
                     collectibles.push({
@@ -2447,7 +2468,7 @@
                         rotation: 0,
                         bobOffset: Math.random() * Math.PI * 2
                     });
-                    break; // Only spawn one per interval
+                    break;
                 }
             }
         }
