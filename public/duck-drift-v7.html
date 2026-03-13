@@ -2524,7 +2524,12 @@
                     if (powerUp.effect === 'invincible') lastStarDistance = gameState.score;
 
                     const size = 35;
-                    const x = CONFIG.riverLeft + 30 + Math.random() * (CONFIG.riverRight - CONFIG.riverLeft - 60);
+                    let x, attempts = 0;
+                    do {
+                        x = CONFIG.riverLeft + 30 + Math.random() * (CONFIG.riverRight - CONFIG.riverLeft - 60);
+                        attempts++;
+                    } while (isPositionOverlapping(x, -size, size, 40) && attempts < 10);
+                    if (attempts >= 10) break; // skip if no clear spot
                     collectibles.push({
                         x: x,
                         y: -size,
