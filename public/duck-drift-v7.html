@@ -192,6 +192,52 @@
             color: #333;
             box-shadow: 0 3px 10px rgba(0,0,0,0.2);
             z-index: 20;
+            transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+        }
+        
+        .speed-indicator.gear-shift {
+            animation: gearShiftPop 0.6s ease-out;
+        }
+        
+        .gear-1 { background: #90EE90; color: #1a5c1a; }
+        .gear-2 { background: var(--yellow); color: #6b5900; }
+        .gear-3 { background: #FFA500; color: #5c3d00; }
+        .gear-4 { background: #FF6B6B; color: #5c0000; }
+        .gear-5 { background: #E040FB; color: #3d004d; }
+        .gear-6 { background: #FF1744; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+        
+        @keyframes gearShiftPop {
+            0% { transform: scale(1); }
+            20% { transform: scale(1.5) rotate(-5deg); }
+            40% { transform: scale(1.3) rotate(3deg); }
+            60% { transform: scale(1.4) rotate(-2deg); }
+            100% { transform: scale(1); }
+        }
+        
+        .gear-shift-overlay {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-family: 'Fredoka One', cursive;
+            font-size: 2.5rem;
+            color: #fff;
+            text-shadow: 0 3px 15px rgba(0,0,0,0.5);
+            z-index: 100;
+            pointer-events: none;
+            opacity: 0;
+        }
+        
+        .gear-shift-overlay.active {
+            animation: gearShiftBanner 1.2s ease-out forwards;
+        }
+        
+        @keyframes gearShiftBanner {
+            0% { transform: translate(-50%, -50%) scale(0) rotate(-15deg); opacity: 0; }
+            15% { transform: translate(-50%, -50%) scale(1.3) rotate(3deg); opacity: 1; }
+            30% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+            70% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(0.5) rotate(10deg); opacity: 0; }
         }
         
         .effect-indicator {
@@ -1040,7 +1086,8 @@
                 </div>
             </div>
             
-            <div class="speed-indicator hidden" id="speedIndicator">⚡ 1x</div>
+            <div class="speed-indicator hidden gear-1" id="speedIndicator">⚙️ Gear 1</div>
+            <div class="gear-shift-overlay" id="gearShiftOverlay"></div>
             
             <button class="sound-toggle" id="soundToggle">🔊</button>
             
@@ -1806,6 +1853,16 @@
         const trailGrid = document.getElementById('trailGrid');
         const previewCanvas = document.getElementById('previewCanvas');
         const previewCtx = previewCanvas ? previewCanvas.getContext('2d') : null;
+        const gearShiftOverlay = document.getElementById('gearShiftOverlay');
+
+        const GEAR_CONFIG = [
+            { name: 'Gear 1', icon: '⚙️', class: 'gear-1', label: '🟢 GEAR 1!' },
+            { name: 'Gear 2', icon: '⚙️', class: 'gear-2', label: '🟡 GEAR 2!' },
+            { name: 'Gear 3', icon: '⚙️', class: 'gear-3', label: '🟠 GEAR 3!' },
+            { name: 'Gear 4', icon: '⚙️', class: 'gear-4', label: '🔴 GEAR 4!' },
+            { name: 'Gear 5', icon: '⚙️', class: 'gear-5', label: '🟣 GEAR 5!' },
+            { name: 'MAX GEAR', icon: '🔥', class: 'gear-6', label: '🔥 MAX GEAR!' }
+        ];
 
         // Supabase config
         const SUPABASE_URL = 'https://zpxtnipsflcyiullrhvh.supabase.co';
@@ -2946,6 +3003,7 @@
         function checkSpeedIncrease() {
             const newMultiplier = Math.floor(gameState.score / CONFIG.speedIncreaseInterval) + 1;
             if (newMultiplier > gameState.speedMultiplier) {
+                const oldGear = gameState.speedMultiplier;
                 gameState.speedMultiplier = newMultiplier;
                 gameState.speed = CONFIG.initialSpeed + (newMultiplier - 1) * CONFIG.speedIncrement;
                 gameState.currentSpawnInterval = Math.max(
@@ -2953,6 +3011,9 @@
                     CONFIG.spawnInterval - (newMultiplier - 1) * 100
                 );
                 updateSpeedIndicator();
+                showGearShift(newMultiplier);
+                playSound('speedUp');
+                addScreenShake(8);
             }
         }
 
@@ -2961,7 +3022,22 @@
         }
 
         function updateSpeedIndicator() {
-            speedIndicator.textContent = `⚡ ${gameState.speedMultiplier}x`;
+            const gearIndex = Math.min(gameState.speedMultiplier - 1, GEAR_CONFIG.length - 1);
+            const gear = GEAR_CONFIG[gearIndex];
+            speedIndicator.textContent = `${gear.icon} ${gear.name}`;
+            speedIndicator.className = 'speed-indicator ' + gear.class;
+        }
+
+        function showGearShift(gearNum) {
+            const gearIndex = Math.min(gearNum - 1, GEAR_CONFIG.length - 1);
+            const gear = GEAR_CONFIG[gearIndex];
+            gearShiftOverlay.textContent = gear.label;
+            gearShiftOverlay.classList.remove('active');
+            void gearShiftOverlay.offsetWidth; // force reflow
+            gearShiftOverlay.classList.add('active');
+            // Add pop to indicator
+            speedIndicator.classList.add('gear-shift');
+            setTimeout(() => speedIndicator.classList.remove('gear-shift'), 600);
         }
 
         function endGame() {
