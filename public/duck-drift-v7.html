@@ -2341,6 +2341,24 @@
                 gameState.lastSpawnTime = now;
             }
 
+            // River fork spawning - start after score 50, with cooldown
+            if (gameState.score >= 50 && gameState.score - gameState.lastForkScore >= gameState.forkCooldown) {
+                if (Math.random() < 0.008) { // ~0.8% chance per frame
+                    spawnFork();
+                    gameState.lastForkScore = gameState.score;
+                }
+            }
+
+            // Update forks
+            gameState.forks.forEach(fork => {
+                fork.y += gameState.speed;
+            });
+            // Remove off-screen forks
+            gameState.forks = gameState.forks.filter(f => f.y < CONFIG.canvasHeight + 50);
+
+            // Fork collision - island acts as wall
+            checkForkCollision();
+
             // Update obstacles
             gameState.obstacles.forEach(obs => {
                 const speedMult = (obs.speedMultiplier || 1) * (obs.difficultySpeedMult || 1);
