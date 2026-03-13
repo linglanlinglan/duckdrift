@@ -1754,7 +1754,11 @@
             activeWhirlpool: null,
             lastHitObstacle: null,
             onGrassTime: 0,
-            grassDamageTimer: 0
+            grassDamageTimer: 0,
+            // River fork system
+            forks: [],
+            lastForkScore: 0,
+            forkCooldown: 80  // minimum score between forks
         };
 
         // DOM Elements
@@ -2175,7 +2179,10 @@
                 activeWhirlpool: null,
                 lastHitObstacle: null,
                 onGrassTime: 0,
-                grassDamageTimer: 0
+                grassDamageTimer: 0,
+                forks: [],
+                lastForkScore: 0,
+                forkCooldown: 80
             };
             
             // Clear trail particles and juice systems
@@ -2333,6 +2340,24 @@
                 spawnObstacle();
                 gameState.lastSpawnTime = now;
             }
+
+            // River fork spawning - start after score 50, with cooldown
+            if (gameState.score >= 50 && gameState.score - gameState.lastForkScore >= gameState.forkCooldown) {
+                if (Math.random() < 0.008) { // ~0.8% chance per frame
+                    spawnFork();
+                    gameState.lastForkScore = gameState.score;
+                }
+            }
+
+            // Update forks
+            gameState.forks.forEach(fork => {
+                fork.y += gameState.speed;
+            });
+            // Remove off-screen forks
+            gameState.forks = gameState.forks.filter(f => f.y < CONFIG.canvasHeight + 50);
+
+            // Fork collision - island acts as wall
+            checkForkCollision();
 
             // Update obstacles
             gameState.obstacles.forEach(obs => {
@@ -2684,6 +2709,163 @@
             }
         }
 
+        // === RIVER FORK SYSTEM ===
+        function spawnFork() {
+            const riverWidth = CONFIG.riverRight - CONFIG.riverLeft;
+            const islandWidth = 30 + Math.random() * 15; // 30-45px wide island
+            const islandLength = 250 + Math.random() * 150; // 250-400px tall
+            const centerX = CONFIG.riverLeft + riverWidth * 0.35 + Math.random() * (riverWidth * 0.3); // center-ish
+
+            gameState.forks.push({
+                y: -islandLength - 60, // start above screen with lead-in
+                centerX: centerX,
+                width: islandWidth,
+                length: islandLength,
+                leadIn: 40,  // tapered nose
+                leadOut: 40  // tapered tail
+            });
+
+            addFloatingText(CONFIG.canvasWidth / 2, 80, '🏝️ FORK!', '#4ECDC4', 1.2);
+        }
+
+        function checkForkCollision() {
+            const duckRadius = (CONFIG.duckSize / 2 - 5) * getActiveBuffs().smallerHitbox;
+            const duckTop = CONFIG.duckY - duckRadius;
+            const duckBottom = CONFIG.duckY + duckRadius;
+            const duckLeft = gameState.duckX - duckRadius;
+            const duckRight = gameState.duckX + duckRadius;
+
+            for (const fork of gameState.forks) {
+                const islandTop = fork.y + fork.leadIn;
+                const islandBottom = fork.y + fork.leadIn + fork.length;
+                const islandLeft = fork.centerX - fork.width / 2;
+                const islandRight = fork.centerX + fork.width / 2;
+
+                // Check if duck overlaps with the island body (not the tapered tips)
+                if (duckBottom > islandTop && duckTop < islandBottom &&
+                    duckRight > islandLeft && duckLeft < islandRight) {
+                    // Push duck to nearest side
+                    const duckCenter = gameState.duckX;
+                    if (duckCenter < fork.centerX) {
+                        gameState.duckX = islandLeft - duckRadius - 1;
+                    } else {
+                        gameState.duckX = islandRight + duckRadius + 1;
+                    }
+                }
+
+                // Also check tapered lead-in (narrower collision)
+                if (duckBottom > fork.y && duckTop < islandTop) {
+                    const progress = (duckBottom - fork.y) / fork.leadIn; // 0 at tip, 1 at full width
+                    const taperWidth = fork.width * Math.min(1, progress) * 0.5;
+                    const taperLeft = fork.centerX - taperWidth;
+                    const taperRight = fork.centerX + taperWidth;
+                    if (duckRight > taperLeft && duckLeft < taperRight) {
+                        if (gameState.duckX < fork.centerX) {
+                            gameState.duckX = taperLeft - duckRadius - 1;
+                        } else {
+                            gameState.duckX = taperRight + duckRadius + 1;
+                        }
+                    }
+                }
+
+                // Tapered lead-out
+                const tailStart = islandBottom;
+                const tailEnd = islandBottom + fork.leadOut;
+                if (duckBottom > tailStart && duckTop < tailEnd) {
+                    const progress = 1 - (duckTop - tailStart) / fork.leadOut;
+                    const taperWidth = fork.width * Math.max(0, progress) * 0.5;
+                    const taperLeft = fork.centerX - taperWidth;
+                    const taperRight = fork.centerX + taperWidth;
+                    if (duckRight > taperLeft && duckLeft < taperRight) {
+                        if (gameState.duckX < fork.centerX) {
+                            gameState.duckX = taperLeft - duckRadius - 1;
+                        } else {
+                            gameState.duckX = taperRight + duckRadius + 1;
+                        }
+                    }
+                }
+            }
+        }
+
+        function drawForks() {
+            for (const fork of gameState.forks) {
+                ctx.save();
+
+                const islandTop = fork.y;
+                const islandBottom = fork.y + fork.leadIn + fork.length + fork.leadOut;
+                const left = fork.centerX - fork.width / 2;
+                const right = fork.centerX + fork.width / 2;
+                const bodyTop = fork.y + fork.leadIn;
+                const bodyBottom = fork.y + fork.leadIn + fork.length;
+
+                // Draw island shape (leaf/diamond with flat middle)
+                ctx.beginPath();
+                // Start at the tapered top point
+                ctx.moveTo(fork.centerX, islandTop);
+                // Right edge lead-in
+                ctx.quadraticCurveTo(right + 5, bodyTop - 10, right, bodyTop);
+                // Right edge body
+                ctx.lineTo(right, bodyBottom);
+                // Right edge lead-out
+                ctx.quadraticCurveTo(right + 5, bodyBottom + 10, fork.centerX, islandBottom);
+                // Left edge lead-out
+                ctx.quadraticCurveTo(left - 5, bodyBottom + 10, left, bodyBottom);
+                // Left edge body
+                ctx.lineTo(left, bodyTop);
+                // Left edge lead-in
+                ctx.quadraticCurveTo(left - 5, bodyTop - 10, fork.centerX, islandTop);
+                ctx.closePath();
+
+                // Fill with grass gradient
+                const grad = ctx.createLinearGradient(left, 0, right, 0);
+                grad.addColorStop(0, '#2E7D32');
+                grad.addColorStop(0.3, '#388E3C');
+                grad.addColorStop(0.5, '#43A047');
+                grad.addColorStop(0.7, '#388E3C');
+                grad.addColorStop(1, '#2E7D32');
+                ctx.fillStyle = grad;
+                ctx.fill();
+
+                // Add edge highlights
+                ctx.strokeStyle = '#1B5E20';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Draw some grass texture on the island
+                ctx.strokeStyle = 'rgba(0,0,0,0.1)';
+                ctx.lineWidth = 1;
+                const grassLines = Math.floor(fork.length / 25);
+                for (let i = 0; i < grassLines; i++) {
+                    const gy = bodyTop + (i + 0.5) * (fork.length / grassLines);
+                    if (gy > bodyTop + 5 && gy < bodyBottom - 5) {
+                        ctx.beginPath();
+                        ctx.moveTo(left + 4, gy);
+                        ctx.lineTo(right - 4, gy + 3);
+                        ctx.stroke();
+                    }
+                }
+
+                // Draw small trees/bushes on the island
+                const treeCount = Math.floor(fork.length / 60);
+                for (let i = 0; i < treeCount; i++) {
+                    const ty = bodyTop + 20 + i * (fork.length / treeCount);
+                    if (ty > bodyTop + 10 && ty < bodyBottom - 10) {
+                        // Small bush circle
+                        ctx.fillStyle = '#2E7D32';
+                        ctx.beginPath();
+                        ctx.arc(fork.centerX - 3 + (i % 2) * 6, ty, 6, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.fillStyle = '#1B5E20';
+                        ctx.beginPath();
+                        ctx.arc(fork.centerX - 3 + (i % 2) * 6, ty, 4, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                }
+
+                ctx.restore();
+            }
+        }
+
         function checkCollision() {
             const duckRadius = (CONFIG.duckSize / 2 - 5) * getActiveBuffs().smallerHitbox;
 
@@ -2927,6 +3109,9 @@
             // Draw riverbanks with gradient grass
             drawRiverbanks();
             
+            // Draw river fork islands
+            drawForks();
+
             // Draw leaf particles (behind obstacles)
             drawParticles();
 
