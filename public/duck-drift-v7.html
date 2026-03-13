@@ -1876,6 +1876,55 @@
             // 250m+ - Beaver dams
             { type: 'beaverdam', color: '#8D6E63', shadowColor: '#5D4037', shape: 'beaverdam', unlockAt: 250 }
         ];
+
+        // === FAIRNESS SYSTEMS ===
+        // Weighted spawn probabilities per obstacle type (higher = more common)
+        const OBSTACLE_WEIGHTS = {
+            rock: 25,
+            log: 20,
+            oilslick: 15,
+            fish: 15,
+            crocodile: 10,
+            whirlpool: 10,
+            beaverdam: 5
+        };
+
+        // Hard obstacle cooldown - prevent back-to-back punishing combos
+        const HARD_TYPES = ['crocodile', 'beaverdam', 'whirlpool'];
+        let recentObstacleTypes = [];
+
+        // Pity system for power-ups
+        let lastHeartDistance = 0;
+        const HEART_PITY_DISTANCE = 300;
+        let lastStarDistance = 0;
+        const STAR_PITY_DISTANCE = 400;
+
+        // Pick obstacle type using weighted probabilities
+        function pickWeightedObstacleType(available) {
+            const typeSet = [...new Set(available.map(o => o.type))];
+            const weights = typeSet.map(t => OBSTACLE_WEIGHTS[t] || 10);
+            const totalWeight = weights.reduce((a, b) => a + b, 0);
+
+            let roll = Math.random() * totalWeight;
+            let chosenType = typeSet[0];
+            for (let i = 0; i < typeSet.length; i++) {
+                roll -= weights[i];
+                if (roll <= 0) { chosenType = typeSet[i]; break; }
+            }
+
+            // Hard obstacle cooldown: if last 2 spawns included a hard type, downgrade
+            if (HARD_TYPES.includes(chosenType) && recentObstacleTypes.slice(-2).some(t => HARD_TYPES.includes(t))) {
+                chosenType = Math.random() < 0.5 ? 'rock' : 'log';
+            }
+
+            // Track recent types (keep last 5)
+            recentObstacleTypes.push(chosenType);
+            if (recentObstacleTypes.length > 5) recentObstacleTypes.shift();
+
+            // Pick a random visual variant of the chosen type
+            const variants = available.filter(o => o.type === chosenType);
+            return variants[Math.floor(Math.random() * variants.length)];
+        }
         
         // Get available obstacles based on current score
         function getAvailableObstacles() {
