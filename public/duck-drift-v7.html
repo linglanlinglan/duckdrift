@@ -2474,6 +2474,30 @@
             gameState.waterOffset = (gameState.waterOffset + gameState.speed) % 40;
         }
         
+        // Check if a position overlaps with any existing obstacles or collectibles
+        function isPositionOverlapping(x, y, size, minDist) {
+            minDist = minDist || 50;
+            // Check against obstacles
+            for (const obs of gameState.obstacles) {
+                if (obs.y < -200) continue; // skip far off-screen
+                const obsCenterX = obs.x + obs.width / 2;
+                const obsCenterY = obs.y + obs.height / 2;
+                const dx = x - obsCenterX;
+                const dy = y - obsCenterY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < (obs.width / 2 + size / 2 + minDist)) return true;
+            }
+            // Check against collectibles
+            for (const c of collectibles) {
+                if (c.y < -200) continue;
+                const dx = x - c.x;
+                const dy = y - c.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < (c.size / 2 + size / 2 + minDist)) return true;
+            }
+            return false;
+        }
+
         // Spawn a collectible/power-up
         function spawnCollectible() {
             for (const powerUp of POWER_UP_TYPES) {
@@ -2500,7 +2524,12 @@
                     if (powerUp.effect === 'invincible') lastStarDistance = gameState.score;
 
                     const size = 35;
-                    const x = CONFIG.riverLeft + 30 + Math.random() * (CONFIG.riverRight - CONFIG.riverLeft - 60);
+                    let x, attempts = 0;
+                    do {
+                        x = CONFIG.riverLeft + 30 + Math.random() * (CONFIG.riverRight - CONFIG.riverLeft - 60);
+                        attempts++;
+                    } while (isPositionOverlapping(x, -size, size, 40) && attempts < 10);
+                    if (attempts >= 10) break; // skip if no clear spot
                     collectibles.push({
                         x: x,
                         y: -size,
@@ -2642,10 +2671,13 @@
             let x;
             
             if (obstacleType.shape === 'beaverdam') {
-                // Beaver dam starts from left bank
                 x = CONFIG.riverLeft;
             } else {
-                x = CONFIG.riverLeft + padding + Math.random() * (CONFIG.riverRight - CONFIG.riverLeft - width - padding * 2);
+                let attempts = 0;
+                do {
+                    x = CONFIG.riverLeft + padding + Math.random() * (CONFIG.riverRight - CONFIG.riverLeft - width - padding * 2);
+                    attempts++;
+                } while (isPositionOverlapping(x + width / 2, -height / 2, Math.max(width, height), 30) && attempts < 10);
             }
             
             // Crocodile movement direction
