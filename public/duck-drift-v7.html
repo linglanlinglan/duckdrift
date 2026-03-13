@@ -3337,17 +3337,60 @@
                 ctx.arc(c.x, c.y + bobY, c.size, 0, Math.PI * 2);
                 ctx.fill();
                 
-                // Draw emoji
-                ctx.font = `${c.size}px Arial`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                
-                // Slight rotation for coins
                 if (c.type === 'coin') {
-                    ctx.translate(c.x, c.y + bobY);
-                    ctx.rotate(c.rotation);
-                    ctx.fillText(c.emoji, 0, 0);
+                    // Draw a proper coin
+                    const cx = c.x;
+                    const cy = c.y + bobY;
+                    const r = c.size * 0.45;
+                    const squeeze = 0.6 + 0.4 * Math.abs(Math.cos(c.rotation)); // simulate 3D spin
+                    
+                    ctx.translate(cx, cy);
+                    ctx.scale(squeeze, 1);
+                    
+                    // Outer ring (dark gold)
+                    ctx.beginPath();
+                    ctx.arc(0, 0, r, 0, Math.PI * 2);
+                    ctx.fillStyle = '#B8860B';
+                    ctx.fill();
+                    
+                    // Inner face (gold gradient)
+                    const coinGrad = ctx.createRadialGradient(-r * 0.3, -r * 0.3, 0, 0, 0, r);
+                    coinGrad.addColorStop(0, '#FFF8DC');
+                    coinGrad.addColorStop(0.3, '#FFD700');
+                    coinGrad.addColorStop(1, '#DAA520');
+                    ctx.beginPath();
+                    ctx.arc(0, 0, r * 0.85, 0, Math.PI * 2);
+                    ctx.fillStyle = coinGrad;
+                    ctx.fill();
+                    
+                    // Inner ring detail
+                    ctx.beginPath();
+                    ctx.arc(0, 0, r * 0.7, 0, Math.PI * 2);
+                    ctx.strokeStyle = '#B8860B44';
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                    
+                    // Dollar sign
+                    if (squeeze > 0.7) {
+                        ctx.font = `bold ${r * 1.1}px Arial`;
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillStyle = '#8B6914';
+                        ctx.fillText('$', 1, 1);
+                        ctx.fillStyle = '#FFF8DC';
+                        ctx.fillText('$', 0, 0);
+                    }
+                    
+                    // Shine highlight
+                    ctx.beginPath();
+                    ctx.arc(-r * 0.25, -r * 0.25, r * 0.3, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(255,255,255,0.35)';
+                    ctx.fill();
                 } else {
+                    // Draw emoji for non-coin collectibles
+                    ctx.font = `${c.size}px Arial`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
                     ctx.fillText(c.emoji, c.x, c.y + bobY);
                 }
                 
