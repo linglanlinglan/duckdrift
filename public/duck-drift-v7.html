@@ -3000,18 +3000,30 @@
             return null;
         }
 
+        function getNextGearDistance() {
+            // Random distance between 30-80m for next gear shift
+            return 30 + Math.floor(Math.random() * 51);
+        }
+
         function checkSpeedIncrease() {
-            const newMultiplier = Math.floor(gameState.score / CONFIG.speedIncreaseInterval) + 1;
-            if (newMultiplier > gameState.speedMultiplier) {
-                const oldGear = gameState.speedMultiplier;
-                gameState.speedMultiplier = newMultiplier;
-                gameState.speed = CONFIG.initialSpeed + (newMultiplier - 1) * CONFIG.speedIncrement;
+            if (!gameState.nextGearAt) {
+                gameState.nextGearAt = getNextGearDistance();
+                gameState.distanceSinceLastGear = 0;
+            }
+            
+            gameState.distanceSinceLastGear = gameState.score - (gameState.lastGearScore || 0);
+            
+            if (gameState.distanceSinceLastGear >= gameState.nextGearAt && gameState.speedMultiplier < GEAR_CONFIG.length) {
+                gameState.speedMultiplier++;
+                gameState.lastGearScore = gameState.score;
+                gameState.nextGearAt = getNextGearDistance();
+                gameState.speed = CONFIG.initialSpeed + (gameState.speedMultiplier - 1) * CONFIG.speedIncrement;
                 gameState.currentSpawnInterval = Math.max(
                     CONFIG.minSpawnInterval,
-                    CONFIG.spawnInterval - (newMultiplier - 1) * 100
+                    CONFIG.spawnInterval - (gameState.speedMultiplier - 1) * 100
                 );
                 updateSpeedIndicator();
-                showGearShift(newMultiplier);
+                showGearShift(gameState.speedMultiplier);
                 playSound('speedUp');
                 addScreenShake(8);
             }
