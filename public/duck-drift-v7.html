@@ -2186,6 +2186,11 @@
             nearMissTimer = 0;
             comboCount = 0;
             
+            // Reset fairness systems
+            recentObstacleTypes = [];
+            lastHeartDistance = 0;
+            lastStarDistance = 0;
+            
             // Clear collectibles and reset power-ups
             collectibles = [];
             lastCollectibleSpawn = Date.now();
