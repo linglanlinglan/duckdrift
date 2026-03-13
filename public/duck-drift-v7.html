@@ -2474,6 +2474,30 @@
             gameState.waterOffset = (gameState.waterOffset + gameState.speed) % 40;
         }
         
+        // Check if a position overlaps with any existing obstacles or collectibles
+        function isPositionOverlapping(x, y, size, minDist) {
+            minDist = minDist || 50;
+            // Check against obstacles
+            for (const obs of gameState.obstacles) {
+                if (obs.y < -200) continue; // skip far off-screen
+                const obsCenterX = obs.x + obs.width / 2;
+                const obsCenterY = obs.y + obs.height / 2;
+                const dx = x - obsCenterX;
+                const dy = y - obsCenterY;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < (obs.width / 2 + size / 2 + minDist)) return true;
+            }
+            // Check against collectibles
+            for (const c of collectibles) {
+                if (c.y < -200) continue;
+                const dx = x - c.x;
+                const dy = y - c.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                if (dist < (c.size / 2 + size / 2 + minDist)) return true;
+            }
+            return false;
+        }
+
         // Spawn a collectible/power-up
         function spawnCollectible() {
             for (const powerUp of POWER_UP_TYPES) {
