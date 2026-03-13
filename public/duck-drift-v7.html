@@ -2607,27 +2607,51 @@
                 difficultySpeedMult: difficulty.speedMultiplier
             });
             
-            // Chance to spawn extra obstacle at higher difficulties
+            // Chance to spawn extra obstacle at higher difficulties - WITH PATH VALIDATION
             if (difficulty.spawnMultiplier > 1 && Math.random() < (difficulty.spawnMultiplier - 1)) {
-                // Spawn a second obstacle with slight delay
                 setTimeout(() => {
                     if (gameState.isRunning) {
-                        const extraType = availableObstacles[Math.floor(Math.random() * availableObstacles.length)];
-                        if (extraType.shape !== 'beaverdam') { // Don't double spawn beaver dams
+                        const extraType = pickWeightedObstacleType(availableObstacles.filter(o => o.shape !== 'beaverdam'));
+                        if (extraType && extraType.shape !== 'beaverdam') {
                             const extraWidth = baseWidth * difficulty.sizeMultiplier * 0.8;
                             const extraHeight = extraType.shape === 'rect' ? extraWidth * 0.6 : extraWidth * 0.7;
-                            const extraX = CONFIG.riverLeft + padding + Math.random() * (CONFIG.riverRight - CONFIG.riverLeft - extraWidth - padding * 2);
-                            gameState.obstacles.push({
-                                x: extraX,
-                                y: -extraHeight - 50,
-                                width: extraWidth,
-                                height: extraHeight,
-                                ...extraType,
-                                rotation: Math.random() * Math.PI * 2,
-                                moveDirection: Math.random() < 0.5 ? -1 : 1,
-                                moveSpeed: 1.5 + Math.random() * 1.5,
-                                difficultySpeedMult: difficulty.speedMultiplier
-                            });
+
+                            // PATH VALIDATION: ensure a navigable gap exists
+                            const MIN_GAP = CONFIG.duckSize + 20;
+                            const firstLeft = x;
+                            const firstRight = x + width;
+                            const leftGap = firstLeft - CONFIG.riverLeft - padding;
+                            const rightGap = CONFIG.riverRight - firstRight - padding;
+
+                            let extraX = null;
+
+                            if (obstacleType.shape === 'beaverdam') {
+                                extraX = CONFIG.riverLeft + padding + Math.random() * (CONFIG.riverRight - CONFIG.riverLeft - extraWidth - padding * 2);
+                            } else if (leftGap >= extraWidth + MIN_GAP && rightGap >= extraWidth + MIN_GAP) {
+                                if (Math.random() < 0.5) {
+                                    extraX = CONFIG.riverLeft + padding + Math.random() * (leftGap - extraWidth - MIN_GAP);
+                                } else {
+                                    extraX = firstRight + MIN_GAP + Math.random() * (rightGap - extraWidth - MIN_GAP);
+                                }
+                            } else if (leftGap >= extraWidth + MIN_GAP) {
+                                extraX = CONFIG.riverLeft + padding + Math.random() * (leftGap - extraWidth - MIN_GAP);
+                            } else if (rightGap >= extraWidth + MIN_GAP) {
+                                extraX = firstRight + MIN_GAP + Math.random() * (rightGap - extraWidth - MIN_GAP);
+                            }
+
+                            if (extraX !== null) {
+                                gameState.obstacles.push({
+                                    x: extraX,
+                                    y: -extraHeight - 50,
+                                    width: extraWidth,
+                                    height: extraHeight,
+                                    ...extraType,
+                                    rotation: Math.random() * Math.PI * 2,
+                                    moveDirection: Math.random() < 0.5 ? -1 : 1,
+                                    moveSpeed: 1.5 + Math.random() * 1.5,
+                                    difficultySpeedMult: difficulty.speedMultiplier
+                                });
+                            }
                         }
                     }
                 }, 200);
