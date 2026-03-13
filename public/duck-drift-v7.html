@@ -2602,7 +2602,7 @@
                 moveSpeed: crocSpeed,
                 // Beaver dam gap
                 gapX: CONFIG.riverLeft + 30 + Math.random() * (CONFIG.riverRight - CONFIG.riverLeft - 100),
-                gapWidth: Math.max(50, 70 - gameState.score * 0.02), // Gap shrinks with distance
+                gapWidth: Math.max(CONFIG.duckSize + 30, 70 - gameState.score * 0.015), // Gap shrinks with distance but stays fair
                 // Apply difficulty speed multiplier
                 difficultySpeedMult: difficulty.speedMultiplier
             });
