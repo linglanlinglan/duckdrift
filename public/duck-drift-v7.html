@@ -1853,6 +1853,16 @@
         const trailGrid = document.getElementById('trailGrid');
         const previewCanvas = document.getElementById('previewCanvas');
         const previewCtx = previewCanvas ? previewCanvas.getContext('2d') : null;
+        const gearShiftOverlay = document.getElementById('gearShiftOverlay');
+
+        const GEAR_CONFIG = [
+            { name: 'Gear 1', icon: '⚙️', class: 'gear-1', label: '🟢 GEAR 1!' },
+            { name: 'Gear 2', icon: '⚙️', class: 'gear-2', label: '🟡 GEAR 2!' },
+            { name: 'Gear 3', icon: '⚙️', class: 'gear-3', label: '🟠 GEAR 3!' },
+            { name: 'Gear 4', icon: '⚙️', class: 'gear-4', label: '🔴 GEAR 4!' },
+            { name: 'Gear 5', icon: '⚙️', class: 'gear-5', label: '🟣 GEAR 5!' },
+            { name: 'MAX GEAR', icon: '🔥', class: 'gear-6', label: '🔥 MAX GEAR!' }
+        ];
 
         // Supabase config
         const SUPABASE_URL = 'https://zpxtnipsflcyiullrhvh.supabase.co';
