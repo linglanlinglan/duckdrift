@@ -1844,6 +1844,8 @@
 
         // High Score and Leaderboard
         let highScore = parseInt(localStorage.getItem('duckDriftHighScore') || '0', 10);
+        // Display persisted high score immediately on load
+        document.getElementById('highScoreText').textContent = highScore;
         let leaderboard = [];
         const MAX_LEADERBOARD_SIZE = 10;
 
