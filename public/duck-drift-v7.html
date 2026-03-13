@@ -2671,10 +2671,13 @@
             let x;
             
             if (obstacleType.shape === 'beaverdam') {
-                // Beaver dam starts from left bank
                 x = CONFIG.riverLeft;
             } else {
-                x = CONFIG.riverLeft + padding + Math.random() * (CONFIG.riverRight - CONFIG.riverLeft - width - padding * 2);
+                let attempts = 0;
+                do {
+                    x = CONFIG.riverLeft + padding + Math.random() * (CONFIG.riverRight - CONFIG.riverLeft - width - padding * 2);
+                    attempts++;
+                } while (isPositionOverlapping(x + width / 2, -height / 2, Math.max(width, height), 30) && attempts < 10);
             }
             
             // Crocodile movement direction
