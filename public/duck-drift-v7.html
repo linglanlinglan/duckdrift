@@ -1843,7 +1843,7 @@
         }
 
         // High Score and Leaderboard
-        let highScore = 0;
+        let highScore = parseInt(localStorage.getItem('duckDriftHighScore') || '0', 10);
         let leaderboard = [];
         const MAX_LEADERBOARD_SIZE = 10;
 
@@ -2934,6 +2934,7 @@
 
             if (gameState.score > highScore) {
                 highScore = gameState.score;
+                localStorage.setItem('duckDriftHighScore', String(highScore));
                 newHighScoreText.classList.remove('hidden');
             } else {
                 newHighScoreText.classList.add('hidden');
