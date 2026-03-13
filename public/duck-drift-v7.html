@@ -1876,6 +1876,55 @@
             // 250m+ - Beaver dams
             { type: 'beaverdam', color: '#8D6E63', shadowColor: '#5D4037', shape: 'beaverdam', unlockAt: 250 }
         ];
+
+        // === FAIRNESS SYSTEMS ===
+        // Weighted spawn probabilities per obstacle type (higher = more common)
+        const OBSTACLE_WEIGHTS = {
+            rock: 25,
+            log: 20,
+            oilslick: 15,
+            fish: 15,
+            crocodile: 10,
+            whirlpool: 10,
+            beaverdam: 5
+        };
+
+        // Hard obstacle cooldown - prevent back-to-back punishing combos
+        const HARD_TYPES = ['crocodile', 'beaverdam', 'whirlpool'];
+        let recentObstacleTypes = [];
+
+        // Pity system for power-ups
+        let lastHeartDistance = 0;
+        const HEART_PITY_DISTANCE = 300;
+        let lastStarDistance = 0;
+        const STAR_PITY_DISTANCE = 400;
+
+        // Pick obstacle type using weighted probabilities
+        function pickWeightedObstacleType(available) {
+            const typeSet = [...new Set(available.map(o => o.type))];
+            const weights = typeSet.map(t => OBSTACLE_WEIGHTS[t] || 10);
+            const totalWeight = weights.reduce((a, b) => a + b, 0);
+
+            let roll = Math.random() * totalWeight;
+            let chosenType = typeSet[0];
+            for (let i = 0; i < typeSet.length; i++) {
+                roll -= weights[i];
+                if (roll <= 0) { chosenType = typeSet[i]; break; }
+            }
+
+            // Hard obstacle cooldown: if last 2 spawns included a hard type, downgrade
+            if (HARD_TYPES.includes(chosenType) && recentObstacleTypes.slice(-2).some(t => HARD_TYPES.includes(t))) {
+                chosenType = Math.random() < 0.5 ? 'rock' : 'log';
+            }
+
+            // Track recent types (keep last 5)
+            recentObstacleTypes.push(chosenType);
+            if (recentObstacleTypes.length > 5) recentObstacleTypes.shift();
+
+            // Pick a random visual variant of the chosen type
+            const variants = available.filter(o => o.type === chosenType);
+            return variants[Math.floor(Math.random() * variants.length)];
+        }
         
         // Get available obstacles based on current score
         function getAvailableObstacles() {
@@ -2137,6 +2186,11 @@
             nearMissTimer = 0;
             comboCount = 0;
             
+            // Reset fairness systems
+            recentObstacleTypes = [];
+            lastHeartDistance = 0;
+            lastStarDistance = 0;
+            
             // Clear collectibles and reset power-ups
             collectibles = [];
             lastCollectibleSpawn = Date.now();
@@ -2387,7 +2441,28 @@
         // Spawn a collectible/power-up
         function spawnCollectible() {
             for (const powerUp of POWER_UP_TYPES) {
-                if (Math.random() < powerUp.spawnChance) {
+                let spawnChance = powerUp.spawnChance;
+
+                // Pity system: boost spawn chance if it's been too long
+                if (powerUp.effect === 'extraLife') {
+                    const distSinceHeart = gameState.score - lastHeartDistance;
+                    if (distSinceHeart > HEART_PITY_DISTANCE) {
+                        spawnChance = 0.12;
+                    } else if (distSinceHeart > HEART_PITY_DISTANCE * 0.7) {
+                        spawnChance = 0.04;
+                    }
+                }
+                if (powerUp.effect === 'invincible') {
+                    const distSinceStar = gameState.score - lastStarDistance;
+                    if (distSinceStar > STAR_PITY_DISTANCE) {
+                        spawnChance = 0.08;
+                    }
+                }
+
+                if (Math.random() < spawnChance) {
+                    if (powerUp.effect === 'extraLife') lastHeartDistance = gameState.score;
+                    if (powerUp.effect === 'invincible') lastStarDistance = gameState.score;
+
                     const size = 35;
                     const x = CONFIG.riverLeft + 30 + Math.random() * (CONFIG.riverRight - CONFIG.riverLeft - 60);
                     collectibles.push({
@@ -2398,7 +2473,7 @@
                         rotation: 0,
                         bobOffset: Math.random() * Math.PI * 2
                     });
-                    break; // Only spawn one per interval
+                    break;
                 }
             }
         }
@@ -2509,7 +2584,7 @@
         function spawnObstacle() {
             const availableObstacles = getAvailableObstacles();
             const difficulty = getDifficultyScale();
-            const obstacleType = availableObstacles[Math.floor(Math.random() * availableObstacles.length)];
+            const obstacleType = pickWeightedObstacleType(availableObstacles);
             
             // Apply size scaling
             const baseWidth = CONFIG.obstacleMinWidth + Math.random() * (CONFIG.obstacleMaxWidth - CONFIG.obstacleMinWidth);
@@ -2553,32 +2628,56 @@
                 moveSpeed: crocSpeed,
                 // Beaver dam gap
                 gapX: CONFIG.riverLeft + 30 + Math.random() * (CONFIG.riverRight - CONFIG.riverLeft - 100),
-                gapWidth: Math.max(50, 70 - gameState.score * 0.02), // Gap shrinks with distance
+                gapWidth: Math.max(CONFIG.duckSize + 30, 70 - gameState.score * 0.015), // Gap shrinks with distance but stays fair
                 // Apply difficulty speed multiplier
                 difficultySpeedMult: difficulty.speedMultiplier
             });
             
-            // Chance to spawn extra obstacle at higher difficulties
+            // Chance to spawn extra obstacle at higher difficulties - WITH PATH VALIDATION
             if (difficulty.spawnMultiplier > 1 && Math.random() < (difficulty.spawnMultiplier - 1)) {
-                // Spawn a second obstacle with slight delay
                 setTimeout(() => {
                     if (gameState.isRunning) {
-                        const extraType = availableObstacles[Math.floor(Math.random() * availableObstacles.length)];
-                        if (extraType.shape !== 'beaverdam') { // Don't double spawn beaver dams
+                        const extraType = pickWeightedObstacleType(availableObstacles.filter(o => o.shape !== 'beaverdam'));
+                        if (extraType && extraType.shape !== 'beaverdam') {
                             const extraWidth = baseWidth * difficulty.sizeMultiplier * 0.8;
                             const extraHeight = extraType.shape === 'rect' ? extraWidth * 0.6 : extraWidth * 0.7;
-                            const extraX = CONFIG.riverLeft + padding + Math.random() * (CONFIG.riverRight - CONFIG.riverLeft - extraWidth - padding * 2);
-                            gameState.obstacles.push({
-                                x: extraX,
-                                y: -extraHeight - 50,
-                                width: extraWidth,
-                                height: extraHeight,
-                                ...extraType,
-                                rotation: Math.random() * Math.PI * 2,
-                                moveDirection: Math.random() < 0.5 ? -1 : 1,
-                                moveSpeed: 1.5 + Math.random() * 1.5,
-                                difficultySpeedMult: difficulty.speedMultiplier
-                            });
+
+                            // PATH VALIDATION: ensure a navigable gap exists
+                            const MIN_GAP = CONFIG.duckSize + 20;
+                            const firstLeft = x;
+                            const firstRight = x + width;
+                            const leftGap = firstLeft - CONFIG.riverLeft - padding;
+                            const rightGap = CONFIG.riverRight - firstRight - padding;
+
+                            let extraX = null;
+
+                            if (obstacleType.shape === 'beaverdam') {
+                                extraX = CONFIG.riverLeft + padding + Math.random() * (CONFIG.riverRight - CONFIG.riverLeft - extraWidth - padding * 2);
+                            } else if (leftGap >= extraWidth + MIN_GAP && rightGap >= extraWidth + MIN_GAP) {
+                                if (Math.random() < 0.5) {
+                                    extraX = CONFIG.riverLeft + padding + Math.random() * (leftGap - extraWidth - MIN_GAP);
+                                } else {
+                                    extraX = firstRight + MIN_GAP + Math.random() * (rightGap - extraWidth - MIN_GAP);
+                                }
+                            } else if (leftGap >= extraWidth + MIN_GAP) {
+                                extraX = CONFIG.riverLeft + padding + Math.random() * (leftGap - extraWidth - MIN_GAP);
+                            } else if (rightGap >= extraWidth + MIN_GAP) {
+                                extraX = firstRight + MIN_GAP + Math.random() * (rightGap - extraWidth - MIN_GAP);
+                            }
+
+                            if (extraX !== null) {
+                                gameState.obstacles.push({
+                                    x: extraX,
+                                    y: -extraHeight - 50,
+                                    width: extraWidth,
+                                    height: extraHeight,
+                                    ...extraType,
+                                    rotation: Math.random() * Math.PI * 2,
+                                    moveDirection: Math.random() < 0.5 ? -1 : 1,
+                                    moveSpeed: 1.5 + Math.random() * 1.5,
+                                    difficultySpeedMult: difficulty.speedMultiplier
+                                });
+                            }
                         }
                     }
                 }, 200);
