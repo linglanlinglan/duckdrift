@@ -3115,7 +3115,7 @@
                 top10Message.classList.add('hidden');
                 const rank = getPlayerRank(gameState.score);
                 if (rank > MAX_LEADERBOARD_SIZE && leaderboard.length > 0) {
-                    yourRankInfo.textContent = `Your rank: #${rank}`;
+                    yourRankInfo.textContent = `😢 Sorry, you didn't make the Top 10! Keep swimming!`;
                 } else {
                     yourRankInfo.textContent = '';
                 }
@@ -3135,7 +3135,7 @@
                     top10Message.classList.add('hidden');
                     const rank = getPlayerRank(gameState.score);
                     if (rank > MAX_LEADERBOARD_SIZE && leaderboard.length > 0) {
-                        yourRankInfo.textContent = `Your rank: #${rank}`;
+                        yourRankInfo.textContent = `😢 Sorry, you didn't make the Top 10! Keep swimming!`;
                     } else {
                         yourRankInfo.textContent = '';
                     }
