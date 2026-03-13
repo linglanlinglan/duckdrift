@@ -3003,6 +3003,7 @@
         function checkSpeedIncrease() {
             const newMultiplier = Math.floor(gameState.score / CONFIG.speedIncreaseInterval) + 1;
             if (newMultiplier > gameState.speedMultiplier) {
+                const oldGear = gameState.speedMultiplier;
                 gameState.speedMultiplier = newMultiplier;
                 gameState.speed = CONFIG.initialSpeed + (newMultiplier - 1) * CONFIG.speedIncrement;
                 gameState.currentSpawnInterval = Math.max(
@@ -3010,6 +3011,9 @@
                     CONFIG.spawnInterval - (newMultiplier - 1) * 100
                 );
                 updateSpeedIndicator();
+                showGearShift(newMultiplier);
+                playSound('speedUp');
+                addScreenShake(8);
             }
         }
 
@@ -3018,7 +3022,22 @@
         }
 
         function updateSpeedIndicator() {
-            speedIndicator.textContent = `⚡ ${gameState.speedMultiplier}x`;
+            const gearIndex = Math.min(gameState.speedMultiplier - 1, GEAR_CONFIG.length - 1);
+            const gear = GEAR_CONFIG[gearIndex];
+            speedIndicator.textContent = `${gear.icon} ${gear.name}`;
+            speedIndicator.className = 'speed-indicator ' + gear.class;
+        }
+
+        function showGearShift(gearNum) {
+            const gearIndex = Math.min(gearNum - 1, GEAR_CONFIG.length - 1);
+            const gear = GEAR_CONFIG[gearIndex];
+            gearShiftOverlay.textContent = gear.label;
+            gearShiftOverlay.classList.remove('active');
+            void gearShiftOverlay.offsetWidth; // force reflow
+            gearShiftOverlay.classList.add('active');
+            // Add pop to indicator
+            speedIndicator.classList.add('gear-shift');
+            setTimeout(() => speedIndicator.classList.remove('gear-shift'), 600);
         }
 
         function endGame() {
