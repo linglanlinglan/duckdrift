@@ -2558,7 +2558,7 @@
         function spawnObstacle() {
             const availableObstacles = getAvailableObstacles();
             const difficulty = getDifficultyScale();
-            const obstacleType = availableObstacles[Math.floor(Math.random() * availableObstacles.length)];
+            const obstacleType = pickWeightedObstacleType(availableObstacles);
             
             // Apply size scaling
             const baseWidth = CONFIG.obstacleMinWidth + Math.random() * (CONFIG.obstacleMaxWidth - CONFIG.obstacleMinWidth);
