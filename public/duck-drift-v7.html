@@ -1128,6 +1128,7 @@
             <!-- HUD -->
             <div class="hud hidden" id="hud">
                 <div class="distance-display">
+                    <span id="titleDisplay" style="font-size:0.7rem;color:#FFD700;display:none;margin-bottom:2px;"></span>
                     <span>Distance: <span class="distance-value" id="scoreText">0</span>m</span>
                 </div>
             </div>
@@ -1216,6 +1217,24 @@
                 <div class="customize-section">
                     <h3>Trail Effects</h3>
                     <div class="customize-grid" id="trailGrid"></div>
+                </div>
+                
+                <!-- Quack Sound Selection -->
+                <div class="customize-section">
+                    <h3>🔊 Quack Style</h3>
+                    <div class="customize-grid" id="quackGrid"></div>
+                </div>
+                
+                <!-- Death Effect Selection -->
+                <div class="customize-section">
+                    <h3>💥 Death Effect</h3>
+                    <div class="customize-grid" id="deathEffectGrid"></div>
+                </div>
+                
+                <!-- Title Selection -->
+                <div class="customize-section">
+                    <h3>🏅 Title</h3>
+                    <div class="customize-grid" id="titleGrid"></div>
                 </div>
                 
                 <button class="btn btn-yellow" id="backFromCustomize" style="margin-top: 15px;">Done</button>
@@ -1366,11 +1385,47 @@
             { id: 'magic', name: 'Magic', icon: '🔮', color: 'rgba(148,0,211,0.6)', unlockAt: 1000, buff: { scoreMultiplier: 1.15, coinBonus: 1.2, magnetRange: 1.2 }, buffDesc: '+15% Score, +20% Coins & Magnet' }
         ];
         
+        const DUCK_QUACKS = [
+            { id: 'classic', name: 'Classic', icon: '🦆', unlockAt: 0, buff: null, buffDesc: 'Standard quack', freq: [800, 400], type: 'sawtooth' },
+            { id: 'squeaky', name: 'Squeaky', icon: '🧸', unlockAt: 0, buff: null, buffDesc: 'Toy duck squeak', freq: [1200, 600], type: 'sine' },
+            { id: 'deep', name: 'Deep', icon: '🎺', unlockAt: 100, buff: null, buffDesc: 'Booming bass quack', freq: [400, 150], type: 'sawtooth' },
+            { id: 'honk', name: 'Honk', icon: '📯', unlockAt: 200, buff: null, buffDesc: 'Goose-like honk', freq: [350, 250], type: 'square' },
+            { id: 'robot', name: 'Robot', icon: '🤖', unlockAt: 350, buff: { scoreMultiplier: 1.03 }, buffDesc: 'Beep boop! +3% Score', freq: [900, 200], type: 'square' },
+            { id: 'whistle', name: 'Whistle', icon: '🎵', unlockAt: 500, buff: { coinBonus: 1.05 }, buffDesc: 'Musical! +5% Coins', freq: [1000, 1400], type: 'sine' },
+            { id: 'thunder', name: 'Thunder', icon: '⚡', unlockAt: 750, buff: { speedBoost: 1.05 }, buffDesc: 'Rumble! +5% Speed', freq: [200, 50], type: 'square' },
+            { id: 'magical', name: 'Magical', icon: '✨', unlockAt: 1000, buff: { powerUpDuration: 1.1 }, buffDesc: 'Enchanted! +10% Power-up', freq: [600, 1200], type: 'triangle' }
+        ];
+        
+        const DUCK_DEATH_EFFECTS = [
+            { id: 'classic', name: 'Classic', icon: '💦', unlockAt: 0, buff: null, buffDesc: 'Standard splash', particles: 'splash' },
+            { id: 'feathers', name: 'Feathers', icon: '🪶', unlockAt: 0, buff: null, buffDesc: 'Poof of feathers', particles: 'feathers' },
+            { id: 'explosion', name: 'Boom!', icon: '💥', unlockAt: 150, buff: null, buffDesc: 'Dramatic explosion', particles: 'explosion' },
+            { id: 'hearts', name: 'Love Out', icon: '💔', unlockAt: 300, buff: { extraStartLife: 1 }, buffDesc: 'Die with love +1 Life', particles: 'hearts' },
+            { id: 'confetti', name: 'Confetti', icon: '🎊', unlockAt: 450, buff: { coinBonus: 1.05 }, buffDesc: 'Party exit! +5% Coins', particles: 'confetti' },
+            { id: 'ghost', name: 'Ghost', icon: '👻', unlockAt: 600, buff: { smallerHitbox: 0.95 }, buffDesc: 'Spooky! -5% Hitbox', particles: 'ghost' },
+            { id: 'pixel', name: 'Pixel', icon: '👾', unlockAt: 800, buff: { scoreMultiplier: 1.05 }, buffDesc: 'Retro! +5% Score', particles: 'pixel' },
+            { id: 'supernova', name: 'Supernova', icon: '🌟', unlockAt: 1000, buff: { scoreMultiplier: 1.08, coinBonus: 1.08 }, buffDesc: 'Epic! +8% Score & Coins', particles: 'supernova' }
+        ];
+        
+        const DUCK_TITLES = [
+            { id: 'none', name: 'None', icon: '❌', unlockAt: 0, buff: null, buffDesc: 'No title' },
+            { id: 'duckling', name: 'Duckling', icon: '🐣', unlockAt: 0, buff: null, buffDesc: 'Just starting out' },
+            { id: 'swimmer', name: 'Swimmer', icon: '🏊', unlockAt: 50, buff: null, buffDesc: 'Getting the hang of it' },
+            { id: 'navigator', name: 'Navigator', icon: '🧭', unlockAt: 150, buff: { scoreMultiplier: 1.02 }, buffDesc: 'Skilled! +2% Score' },
+            { id: 'captain', name: 'Captain', icon: '⚓', unlockAt: 300, buff: { speedBoost: 1.05 }, buffDesc: 'In command! +5% Speed' },
+            { id: 'legend', name: 'Legend', icon: '🏆', unlockAt: 500, buff: { coinBonus: 1.1 }, buffDesc: 'Legendary! +10% Coins' },
+            { id: 'mythical', name: 'Mythical', icon: '🐉', unlockAt: 750, buff: { scoreMultiplier: 1.05, magnetRange: 1.1 }, buffDesc: 'Mythical! +5% Score, +10% Magnet' },
+            { id: 'godquack', name: 'God Quack', icon: '👑', unlockAt: 1000, buff: { scoreMultiplier: 1.1, coinBonus: 1.1, powerUpDuration: 1.1 }, buffDesc: 'Divine! +10% Score, Coins & Power-up' }
+        ];
+        
         // Player customization state
         let playerCustomization = {
             skin: 'classic',
             hat: 'none',
-            trail: 'none'
+            trail: 'none',
+            quack: 'classic',
+            deathEffect: 'classic',
+            title: 'none'
         };
         
         // Get combined buffs from all equipped cosmetics
@@ -1379,7 +1434,10 @@
             const skin = DUCK_SKINS.find(s => s.id === playerCustomization.skin);
             const hat = DUCK_HATS.find(h => h.id === playerCustomization.hat);
             const trail = DUCK_TRAILS.find(t => t.id === playerCustomization.trail);
-            [skin, hat, trail].forEach(item => {
+            const quack = DUCK_QUACKS.find(q => q.id === playerCustomization.quack);
+            const deathEff = DUCK_DEATH_EFFECTS.find(d => d.id === playerCustomization.deathEffect);
+            const title = DUCK_TITLES.find(t => t.id === playerCustomization.title);
+            [skin, hat, trail, quack, deathEff, title].forEach(item => {
                 if (item && item.buff) {
                     Object.keys(item.buff).forEach(key => {
                         if (key === 'extraStartLife') buffs[key] += item.buff[key];
@@ -1522,14 +1580,15 @@
             
             switch(type) {
                 case 'quack':
-                    // Duck quack sound
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(800, now);
-                    osc.frequency.exponentialRampToValueAtTime(400, now + 0.1);
+                    // Duck quack sound - uses selected quack style
+                    const quackStyle = DUCK_QUACKS.find(q => q.id === playerCustomization.quack) || DUCK_QUACKS[0];
+                    osc.type = quackStyle.type;
+                    osc.frequency.setValueAtTime(quackStyle.freq[0], now);
+                    osc.frequency.exponentialRampToValueAtTime(quackStyle.freq[1], now + 0.12);
                     gain.gain.setValueAtTime(0.15, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.18);
                     osc.start(now);
-                    osc.stop(now + 0.15);
+                    osc.stop(now + 0.18);
                     break;
                     
                 case 'splash':
@@ -1729,6 +1788,14 @@
                     ctx.ellipse(0, 0, p.size, p.size * 0.5, 0, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.restore();
+                } else if (p.isEmoji && p.text) {
+                    ctx.font = `${p.size * 2}px serif`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(p.text, p.x, p.y);
+                } else if (p.isSquare) {
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(p.x - p.size/2, p.y - p.size/2, p.size, p.size);
                 } else {
                     ctx.fillStyle = p.color;
                     ctx.beginPath();
@@ -1909,6 +1976,9 @@
         const skinGrid = document.getElementById('skinGrid');
         const hatGrid = document.getElementById('hatGrid');
         const trailGrid = document.getElementById('trailGrid');
+        const quackGrid = document.getElementById('quackGrid');
+        const deathEffectGrid = document.getElementById('deathEffectGrid');
+        const titleGrid = document.getElementById('titleGrid');
         const previewCanvas = document.getElementById('previewCanvas');
         const previewCtx = previewCanvas ? previewCanvas.getContext('2d') : null;
         const gearShiftOverlay = document.getElementById('gearShiftOverlay');
@@ -2354,6 +2424,16 @@
             comboDisplay.classList.add('hidden');
             hud.classList.remove('hidden');
             speedIndicator.classList.remove('hidden');
+            
+            // Show title in HUD
+            const titleDisplay = document.getElementById('titleDisplay');
+            const selectedTitle = DUCK_TITLES.find(t => t.id === playerCustomization.title);
+            if (selectedTitle && selectedTitle.id !== 'none') {
+                titleDisplay.textContent = `${selectedTitle.icon} ${selectedTitle.name}`;
+                titleDisplay.style.display = 'block';
+            } else {
+                titleDisplay.style.display = 'none';
+            }
 
             updateScore();
             updateSpeedIndicator();
@@ -3144,9 +3224,68 @@
             }
         }
 
+        function playDeathEffect() {
+            const effect = DUCK_DEATH_EFFECTS.find(d => d.id === playerCustomization.deathEffect) || DUCK_DEATH_EFFECTS[0];
+            const x = gameState.duckX;
+            const y = CONFIG.duckY;
+            const count = 25;
+            
+            switch(effect.particles) {
+                case 'feathers':
+                    for (let i = 0; i < count; i++) {
+                        particles.push({ x, y, vx: (Math.random()-0.5)*6, vy: -Math.random()*4-1, life: 1, maxLife: 1, size: 4+Math.random()*4, color: ['#fff','#FFE066','#FFD93D','#F4C430'][Math.floor(Math.random()*4)], text: '🪶', isEmoji: true });
+                    }
+                    break;
+                case 'explosion':
+                    for (let i = 0; i < count+10; i++) {
+                        const angle = Math.random()*Math.PI*2;
+                        const speed = 2+Math.random()*6;
+                        particles.push({ x, y, vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed, life: 1, maxLife: 1, size: 3+Math.random()*5, color: ['#FF4500','#FF6347','#FFD700','#FF8C00'][Math.floor(Math.random()*4)] });
+                    }
+                    addScreenShake(20);
+                    break;
+                case 'hearts':
+                    for (let i = 0; i < count; i++) {
+                        particles.push({ x: x+(Math.random()-0.5)*40, y: y+(Math.random()-0.5)*40, vx: (Math.random()-0.5)*3, vy: -Math.random()*3-1, life: 1.2, maxLife: 1.2, size: 6, color: '#FF69B4', text: ['💔','❤️','💕'][Math.floor(Math.random()*3)], isEmoji: true });
+                    }
+                    break;
+                case 'confetti':
+                    for (let i = 0; i < count+15; i++) {
+                        const angle = Math.random()*Math.PI*2;
+                        const speed = 1+Math.random()*5;
+                        particles.push({ x, y, vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed-2, life: 1.5, maxLife: 1.5, size: 3+Math.random()*4, color: ['#FF6B6B','#4ECDC4','#FFD93D','#9B59B6','#3498DB','#E74C3C'][Math.floor(Math.random()*6)] });
+                    }
+                    break;
+                case 'ghost':
+                    for (let i = 0; i < 15; i++) {
+                        particles.push({ x: x+(Math.random()-0.5)*30, y, vx: (Math.random()-0.5)*2, vy: -Math.random()*3-1, life: 1.5, maxLife: 1.5, size: 8, color: 'rgba(255,255,255,0.6)', text: '👻', isEmoji: true });
+                    }
+                    break;
+                case 'pixel':
+                    for (let i = 0; i < count+10; i++) {
+                        const angle = Math.random()*Math.PI*2;
+                        const speed = 1+Math.random()*4;
+                        particles.push({ x, y, vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed, life: 1, maxLife: 1, size: 6, color: ['#00FF00','#FF00FF','#00FFFF','#FFFF00'][Math.floor(Math.random()*4)], isSquare: true });
+                    }
+                    break;
+                case 'supernova':
+                    for (let i = 0; i < 40; i++) {
+                        const angle = Math.random()*Math.PI*2;
+                        const speed = 1+Math.random()*8;
+                        particles.push({ x, y, vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed, life: 1.5, maxLife: 1.5, size: 2+Math.random()*6, color: ['#FFD700','#FFF','#FF6347','#FFB347','#FFFACD'][Math.floor(Math.random()*5)] });
+                    }
+                    addScreenShake(25);
+                    break;
+                default: // splash
+                    addSplashParticles(x, y, 20, 'rgba(100,180,255,0.7)');
+                    break;
+            }
+        }
+        
         function endGame() {
             console.log('[endGame] called');
             gameState.isRunning = false;
+            playDeathEffect();
             if (gameState.animationFrame) {
                 cancelAnimationFrame(gameState.animationFrame);
             }
@@ -4345,6 +4484,9 @@
             renderCustomizeGrid(skinGrid, DUCK_SKINS, 'skin');
             renderCustomizeGrid(hatGrid, DUCK_HATS, 'hat');
             renderCustomizeGrid(trailGrid, DUCK_TRAILS, 'trail');
+            renderCustomizeGrid(quackGrid, DUCK_QUACKS, 'quack');
+            renderCustomizeGrid(deathEffectGrid, DUCK_DEATH_EFFECTS, 'deathEffect');
+            renderCustomizeGrid(titleGrid, DUCK_TITLES, 'title');
         }
         
         function renderCustomizeGrid(container, items, type) {
@@ -4375,6 +4517,10 @@
                         playerCustomization[type] = item.id;
                         updateCustomizationUI();
                         drawPreviewDuck();
+                        // Preview quack sound when selecting
+                        if (type === 'quack') {
+                            playSound('quack');
+                        }
                     }
                 });
                 
@@ -4386,6 +4532,9 @@
             renderCustomizeGrid(skinGrid, DUCK_SKINS, 'skin');
             renderCustomizeGrid(hatGrid, DUCK_HATS, 'hat');
             renderCustomizeGrid(trailGrid, DUCK_TRAILS, 'trail');
+            renderCustomizeGrid(quackGrid, DUCK_QUACKS, 'quack');
+            renderCustomizeGrid(deathEffectGrid, DUCK_DEATH_EFFECTS, 'deathEffect');
+            renderCustomizeGrid(titleGrid, DUCK_TITLES, 'title');
         }
         
         function drawPreviewDuck() {
