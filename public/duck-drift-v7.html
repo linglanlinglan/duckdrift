@@ -3233,6 +3233,7 @@
         function showGearShift(gearNum) {
             const gearIndex = Math.min(gearNum - 1, GEAR_CONFIG.length - 1);
             const gear = GEAR_CONFIG[gearIndex];
+            gear.label = `⚙️ GEAR ${gearNum}!`;
             gearShiftOverlay.textContent = gear.label;
             gearShiftOverlay.classList.remove('active');
             void gearShiftOverlay.offsetWidth; // force reflow
