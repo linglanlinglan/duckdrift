@@ -3205,6 +3205,64 @@
             }
         }
 
+        function playDeathEffect() {
+            const effect = DUCK_DEATH_EFFECTS.find(d => d.id === playerCustomization.deathEffect) || DUCK_DEATH_EFFECTS[0];
+            const x = gameState.duckX;
+            const y = CONFIG.duckY;
+            const count = 25;
+            
+            switch(effect.particles) {
+                case 'feathers':
+                    for (let i = 0; i < count; i++) {
+                        particles.push({ x, y, vx: (Math.random()-0.5)*6, vy: -Math.random()*4-1, life: 1, maxLife: 1, size: 4+Math.random()*4, color: ['#fff','#FFE066','#FFD93D','#F4C430'][Math.floor(Math.random()*4)], text: '🪶', isEmoji: true });
+                    }
+                    break;
+                case 'explosion':
+                    for (let i = 0; i < count+10; i++) {
+                        const angle = Math.random()*Math.PI*2;
+                        const speed = 2+Math.random()*6;
+                        particles.push({ x, y, vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed, life: 1, maxLife: 1, size: 3+Math.random()*5, color: ['#FF4500','#FF6347','#FFD700','#FF8C00'][Math.floor(Math.random()*4)] });
+                    }
+                    addScreenShake(20);
+                    break;
+                case 'hearts':
+                    for (let i = 0; i < count; i++) {
+                        particles.push({ x: x+(Math.random()-0.5)*40, y: y+(Math.random()-0.5)*40, vx: (Math.random()-0.5)*3, vy: -Math.random()*3-1, life: 1.2, maxLife: 1.2, size: 6, color: '#FF69B4', text: ['💔','❤️','💕'][Math.floor(Math.random()*3)], isEmoji: true });
+                    }
+                    break;
+                case 'confetti':
+                    for (let i = 0; i < count+15; i++) {
+                        const angle = Math.random()*Math.PI*2;
+                        const speed = 1+Math.random()*5;
+                        particles.push({ x, y, vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed-2, life: 1.5, maxLife: 1.5, size: 3+Math.random()*4, color: ['#FF6B6B','#4ECDC4','#FFD93D','#9B59B6','#3498DB','#E74C3C'][Math.floor(Math.random()*6)] });
+                    }
+                    break;
+                case 'ghost':
+                    for (let i = 0; i < 15; i++) {
+                        particles.push({ x: x+(Math.random()-0.5)*30, y, vx: (Math.random()-0.5)*2, vy: -Math.random()*3-1, life: 1.5, maxLife: 1.5, size: 8, color: 'rgba(255,255,255,0.6)', text: '👻', isEmoji: true });
+                    }
+                    break;
+                case 'pixel':
+                    for (let i = 0; i < count+10; i++) {
+                        const angle = Math.random()*Math.PI*2;
+                        const speed = 1+Math.random()*4;
+                        particles.push({ x, y, vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed, life: 1, maxLife: 1, size: 6, color: ['#00FF00','#FF00FF','#00FFFF','#FFFF00'][Math.floor(Math.random()*4)], isSquare: true });
+                    }
+                    break;
+                case 'supernova':
+                    for (let i = 0; i < 40; i++) {
+                        const angle = Math.random()*Math.PI*2;
+                        const speed = 1+Math.random()*8;
+                        particles.push({ x, y, vx: Math.cos(angle)*speed, vy: Math.sin(angle)*speed, life: 1.5, maxLife: 1.5, size: 2+Math.random()*6, color: ['#FFD700','#FFF','#FF6347','#FFB347','#FFFACD'][Math.floor(Math.random()*5)] });
+                    }
+                    addScreenShake(25);
+                    break;
+                default: // splash
+                    addSplashParticles(x, y, 20, 'rgba(100,180,255,0.7)');
+                    break;
+            }
+        }
+        
         function endGame() {
             console.log('[endGame] called');
             gameState.isRunning = false;
