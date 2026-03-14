@@ -4506,6 +4506,10 @@
                         playerCustomization[type] = item.id;
                         updateCustomizationUI();
                         drawPreviewDuck();
+                        // Preview quack sound when selecting
+                        if (type === 'quack') {
+                            playSound('quack');
+                        }
                     }
                 });
                 
