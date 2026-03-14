@@ -1433,7 +1433,10 @@
             const skin = DUCK_SKINS.find(s => s.id === playerCustomization.skin);
             const hat = DUCK_HATS.find(h => h.id === playerCustomization.hat);
             const trail = DUCK_TRAILS.find(t => t.id === playerCustomization.trail);
-            [skin, hat, trail].forEach(item => {
+            const quack = DUCK_QUACKS.find(q => q.id === playerCustomization.quack);
+            const deathEff = DUCK_DEATH_EFFECTS.find(d => d.id === playerCustomization.deathEffect);
+            const title = DUCK_TITLES.find(t => t.id === playerCustomization.title);
+            [skin, hat, trail, quack, deathEff, title].forEach(item => {
                 if (item && item.buff) {
                     Object.keys(item.buff).forEach(key => {
                         if (key === 'extraStartLife') buffs[key] += item.buff[key];
