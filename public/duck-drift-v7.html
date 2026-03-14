@@ -3211,9 +3211,10 @@
         }
 
         function updateSpeedIndicator() {
-            const gearIndex = Math.min(gameState.speedMultiplier - 1, GEAR_CONFIG.length - 1);
+            const gearNum = gameState.speedMultiplier || 1;
+            const gearIndex = Math.min(gearNum - 1, GEAR_CONFIG.length - 1);
             const gear = GEAR_CONFIG[gearIndex];
-            speedIndicator.textContent = `${gear.icon} ${gear.name}`;
+            speedIndicator.textContent = `⚙️ Gear ${gearNum}`;
             speedIndicator.className = 'speed-indicator ' + gear.class;
         }
 
