@@ -1579,14 +1579,15 @@
             
             switch(type) {
                 case 'quack':
-                    // Duck quack sound
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(800, now);
-                    osc.frequency.exponentialRampToValueAtTime(400, now + 0.1);
+                    // Duck quack sound - uses selected quack style
+                    const quackStyle = DUCK_QUACKS.find(q => q.id === playerCustomization.quack) || DUCK_QUACKS[0];
+                    osc.type = quackStyle.type;
+                    osc.frequency.setValueAtTime(quackStyle.freq[0], now);
+                    osc.frequency.exponentialRampToValueAtTime(quackStyle.freq[1], now + 0.12);
                     gain.gain.setValueAtTime(0.15, now);
-                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15);
+                    gain.gain.exponentialRampToValueAtTime(0.01, now + 0.18);
                     osc.start(now);
-                    osc.stop(now + 0.15);
+                    osc.stop(now + 0.18);
                     break;
                     
                 case 'splash':
