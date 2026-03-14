@@ -3177,7 +3177,7 @@
         }
 
         function getNextGearDistance() {
-            return 80 + Math.floor(Math.random() * 101);
+            return 50 + Math.floor(Math.random() * 51);
         }
 
         function checkSpeedIncrease() {
@@ -3189,20 +3189,15 @@
             gameState.distanceSinceLastGear = gameState.score - (gameState.lastGearScore || 0);
             
             if (gameState.distanceSinceLastGear >= gameState.nextGearAt) {
-                // If we've used all gears, reshuffle and loop
-                if (gameState.currentGearIndex >= gameState.gearSequence.length) {
-                    gameState.gearSequence = shuffleArray([1, 2, 3, 4, 5, 6]);
-                    gameState.currentGearIndex = 0;
-                }
-                const gearNum = gameState.gearSequence[gameState.currentGearIndex];
-                gameState.currentGearIndex++;
+                gameState.currentGear = (gameState.currentGear || 0) + 1;
+                const gearNum = gameState.currentGear;
                 gameState.speedMultiplier = gearNum;
                 gameState.lastGearScore = gameState.score;
                 gameState.nextGearAt = getNextGearDistance();
                 gameState.speed = CONFIG.initialSpeed + (gearNum - 1) * CONFIG.speedIncrement;
                 gameState.currentSpawnInterval = Math.max(
                     CONFIG.minSpawnInterval,
-                    CONFIG.spawnInterval - (gearNum - 1) * 100
+                    CONFIG.spawnInterval - (gearNum - 1) * 30
                 );
                 updateSpeedIndicator();
                 showGearShift(gearNum);
