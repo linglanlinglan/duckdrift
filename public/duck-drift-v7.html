@@ -3113,6 +3113,18 @@
             speedIndicator.className = 'speed-indicator ' + gear.class;
         }
 
+        let hasSeenGearTutorial = localStorage.getItem('duckdrift_gear_tutorial') === 'true';
+        const gearTutorialPopup = document.getElementById('gearTutorialPopup');
+        const gearTutorialDismiss = document.getElementById('gearTutorialDismiss');
+        
+        gearTutorialDismiss.addEventListener('click', () => {
+            gearTutorialPopup.classList.remove('active');
+            hasSeenGearTutorial = true;
+            localStorage.setItem('duckdrift_gear_tutorial', 'true');
+            gameState.isPaused = false;
+            if (gameState.isRunning) gameLoop();
+        });
+
         function showGearShift(gearNum) {
             const gearIndex = Math.min(gearNum - 1, GEAR_CONFIG.length - 1);
             const gear = GEAR_CONFIG[gearIndex];
@@ -3123,6 +3135,12 @@
             // Add pop to indicator
             speedIndicator.classList.add('gear-shift');
             setTimeout(() => speedIndicator.classList.remove('gear-shift'), 600);
+            
+            // Show tutorial on first gear shift ever
+            if (!hasSeenGearTutorial) {
+                gameState.isPaused = true;
+                gearTutorialPopup.classList.add('active');
+            }
         }
 
         function endGame() {
