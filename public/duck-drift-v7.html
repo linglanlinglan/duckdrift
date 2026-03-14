@@ -1360,7 +1360,11 @@
             { id: 'ghost', name: 'Ghost', icon: '👻', colors: { body: ['#FFFFFF', '#F8F9FA', '#D1D9E0'], beak: '#A0ADB8', ghost: true }, unlockAt: 300, buff: { smallerHitbox: 0.8 }, buffDesc: '-20% Hitbox' },
             { id: 'ninja', name: 'Ninja', icon: '🥷', colors: { body: ['#3D566E', '#2C3E50', '#1A252F'], beak: '#C0392B' }, unlockAt: 500, buff: { speedBoost: 1.2, smallerHitbox: 0.9 }, buffDesc: '+20% Speed, -10% Hitbox' },
             { id: 'rainbow', name: 'Rainbow', icon: '🌈', colors: { body: ['#FF6B6B', '#4ECDC4', '#FFD93D'], beak: '#9B59B6', rainbow: true }, unlockAt: 750, buff: { scoreMultiplier: 1.15, coinBonus: 1.15 }, buffDesc: '+15% Score & Coins' },
-            { id: 'galaxy', name: 'Galaxy', icon: '🌌', colors: { body: ['#1a1a2e', '#4a148c', '#7b1fa2'], beak: '#E040FB', sparkle: true }, unlockAt: 1000, buff: { scoreMultiplier: 1.2, magnetRange: 1.3 }, buffDesc: '+20% Score, +30% Magnet' }
+            { id: 'galaxy', name: 'Galaxy', icon: '🌌', colors: { body: ['#1a1a2e', '#4a148c', '#7b1fa2'], beak: '#E040FB', sparkle: true }, unlockAt: 1000, buff: { scoreMultiplier: 1.2, magnetRange: 1.3 }, buffDesc: '+20% Score, +30% Magnet' },
+            { id: 'lava', name: 'Lava', icon: '🌋', colors: { body: ['#FF4500', '#CC3700', '#8B0000'], beak: '#FFD700', sparkle: true }, unlockAt: 1500, buff: { speedBoost: 1.25, scoreMultiplier: 1.1 }, buffDesc: '+25% Speed, +10% Score' },
+            { id: 'diamond', name: 'Diamond', icon: '💎', colors: { body: ['#B9F2FF', '#7DF9FF', '#00CED1'], beak: '#E0FFFF', sparkle: true }, unlockAt: 2500, buff: { coinBonus: 1.4, smallerHitbox: 0.8 }, buffDesc: '+40% Coins, -20% Hitbox' },
+            { id: 'void', name: 'Void', icon: '🕳️', colors: { body: ['#0D0D0D', '#1C1C1C', '#000000'], beak: '#8B00FF', ghost: true, sparkle: true }, unlockAt: 4000, buff: { smallerHitbox: 0.7, scoreMultiplier: 1.15, speedBoost: 1.15 }, buffDesc: '-30% Hitbox, +15% Score & Speed' },
+            { id: 'celestial', name: 'Celestial', icon: '🪽', colors: { body: ['#FFFDE7', '#FFF9C4', '#FFF176'], beak: '#FFD54F', rainbow: true, sparkle: true }, unlockAt: 6000, buff: { scoreMultiplier: 1.3, coinBonus: 1.3, magnetRange: 1.4, extraStartLife: 1 }, buffDesc: '+30% Score & Coins, +40% Magnet, +1 Life' }
         ];
         
         const DUCK_HATS = [
@@ -1371,7 +1375,11 @@
             { id: 'party', name: 'Party', icon: '🎉', unlockAt: 250, buff: { powerUpDuration: 1.2 }, buffDesc: '+20% Power-up Duration' },
             { id: 'pirate', name: 'Pirate', icon: '🏴‍☠️', unlockAt: 400, buff: { coinBonus: 1.3 }, buffDesc: '+30% Coins' },
             { id: 'wizard', name: 'Wizard', icon: '🧙', unlockAt: 600, buff: { powerUpDuration: 1.4, magnetRange: 1.2 }, buffDesc: '+40% Power-up, +20% Magnet' },
-            { id: 'alien', name: 'Alien', icon: '👽', unlockAt: 800, buff: { smallerHitbox: 0.85, scoreMultiplier: 1.1 }, buffDesc: '-15% Hitbox, +10% Score' }
+            { id: 'alien', name: 'Alien', icon: '👽', unlockAt: 800, buff: { smallerHitbox: 0.85, scoreMultiplier: 1.1 }, buffDesc: '-15% Hitbox, +10% Score' },
+            { id: 'halo', name: 'Halo', icon: '😇', unlockAt: 1500, buff: { extraStartLife: 1, powerUpDuration: 1.2 }, buffDesc: '+1 Life, +20% Power-up' },
+            { id: 'viking', name: 'Viking', icon: '⚔️', unlockAt: 2500, buff: { speedBoost: 1.2, coinBonus: 1.2 }, buffDesc: '+20% Speed & Coins' },
+            { id: 'astronaut', name: 'Astronaut', icon: '🚀', unlockAt: 4000, buff: { smallerHitbox: 0.75, magnetRange: 1.3, scoreMultiplier: 1.1 }, buffDesc: '-25% Hitbox, +30% Magnet, +10% Score' },
+            { id: 'emperor', name: 'Emperor', icon: '🏯', unlockAt: 6000, buff: { coinBonus: 1.5, scoreMultiplier: 1.2, powerUpDuration: 1.3 }, buffDesc: '+50% Coins, +20% Score, +30% Power-up' }
         ];
         
         const DUCK_TRAILS = [
@@ -1382,7 +1390,11 @@
             { id: 'fire', name: 'Fire', icon: '🔥', color: 'rgba(255,69,0,0.6)', unlockAt: 450, buff: { speedBoost: 1.15 }, buffDesc: '+15% Speed' },
             { id: 'sparkle', name: 'Sparkle', icon: '💫', color: 'rgba(255,255,255,0.8)', unlockAt: 600, buff: { magnetRange: 1.25 }, buffDesc: '+25% Magnet Range' },
             { id: 'rainbow', name: 'Rainbow', icon: '🌈', color: 'rainbow', unlockAt: 800, buff: { scoreMultiplier: 1.1, powerUpDuration: 1.2 }, buffDesc: '+10% Score, +20% Power-up' },
-            { id: 'magic', name: 'Magic', icon: '🔮', color: 'rgba(148,0,211,0.6)', unlockAt: 1000, buff: { scoreMultiplier: 1.15, coinBonus: 1.2, magnetRange: 1.2 }, buffDesc: '+15% Score, +20% Coins & Magnet' }
+            { id: 'magic', name: 'Magic', icon: '🔮', color: 'rgba(148,0,211,0.6)', unlockAt: 1000, buff: { scoreMultiplier: 1.15, coinBonus: 1.2, magnetRange: 1.2 }, buffDesc: '+15% Score, +20% Coins & Magnet' },
+            { id: 'lightning', name: 'Lightning', icon: '⚡', color: 'rgba(255,255,0,0.7)', unlockAt: 1500, buff: { speedBoost: 1.2, scoreMultiplier: 1.05 }, buffDesc: '+20% Speed, +5% Score' },
+            { id: 'plasma', name: 'Plasma', icon: '🟣', color: 'rgba(200,0,255,0.5)', unlockAt: 2500, buff: { magnetRange: 1.4, coinBonus: 1.15 }, buffDesc: '+40% Magnet, +15% Coins' },
+            { id: 'aurora', name: 'Aurora', icon: '🌌', color: 'aurora', unlockAt: 4000, buff: { scoreMultiplier: 1.2, powerUpDuration: 1.3, magnetRange: 1.2 }, buffDesc: '+20% Score, +30% Power-up, +20% Magnet' },
+            { id: 'cosmic', name: 'Cosmic', icon: '🌠', color: 'cosmic', unlockAt: 6000, buff: { scoreMultiplier: 1.25, coinBonus: 1.25, extraStartLife: 1, magnetRange: 1.3 }, buffDesc: '+25% Score & Coins, +1 Life, +30% Magnet' }
         ];
         
         const DUCK_QUACKS = [
@@ -1393,7 +1405,11 @@
             { id: 'robot', name: 'Robot', icon: '🤖', unlockAt: 350, buff: { scoreMultiplier: 1.03 }, buffDesc: 'Beep boop! +3% Score', freq: [900, 200], type: 'square' },
             { id: 'whistle', name: 'Whistle', icon: '🎵', unlockAt: 500, buff: { coinBonus: 1.05 }, buffDesc: 'Musical! +5% Coins', freq: [1000, 1400], type: 'sine' },
             { id: 'thunder', name: 'Thunder', icon: '⚡', unlockAt: 750, buff: { speedBoost: 1.05 }, buffDesc: 'Rumble! +5% Speed', freq: [200, 50], type: 'square' },
-            { id: 'magical', name: 'Magical', icon: '✨', unlockAt: 1000, buff: { powerUpDuration: 1.1 }, buffDesc: 'Enchanted! +10% Power-up', freq: [600, 1200], type: 'triangle' }
+            { id: 'magical', name: 'Magical', icon: '✨', unlockAt: 1000, buff: { powerUpDuration: 1.1 }, buffDesc: 'Enchanted! +10% Power-up', freq: [600, 1200], type: 'triangle' },
+            { id: 'laser', name: 'Laser', icon: '🔫', unlockAt: 1500, buff: { speedBoost: 1.08 }, buffDesc: 'Pew pew! +8% Speed', freq: [2000, 100], type: 'sawtooth' },
+            { id: 'dubstep', name: 'Dubstep', icon: '🎧', unlockAt: 2500, buff: { scoreMultiplier: 1.08 }, buffDesc: 'Drop the bass! +8% Score', freq: [150, 80], type: 'square' },
+            { id: 'angel', name: 'Angel', icon: '🪽', unlockAt: 4000, buff: { powerUpDuration: 1.2, coinBonus: 1.1 }, buffDesc: 'Holy! +20% Power-up, +10% Coins', freq: [500, 800], type: 'sine' },
+            { id: 'demonic', name: 'Demonic', icon: '😈', unlockAt: 6000, buff: { scoreMultiplier: 1.12, speedBoost: 1.1, smallerHitbox: 0.95 }, buffDesc: 'Infernal! +12% Score, +10% Speed, -5% Hitbox', freq: [100, 40], type: 'sawtooth' }
         ];
         
         const DUCK_DEATH_EFFECTS = [
@@ -1404,7 +1420,11 @@
             { id: 'confetti', name: 'Confetti', icon: '🎊', unlockAt: 450, buff: { coinBonus: 1.05 }, buffDesc: 'Party exit! +5% Coins', particles: 'confetti' },
             { id: 'ghost', name: 'Ghost', icon: '👻', unlockAt: 600, buff: { smallerHitbox: 0.95 }, buffDesc: 'Spooky! -5% Hitbox', particles: 'ghost' },
             { id: 'pixel', name: 'Pixel', icon: '👾', unlockAt: 800, buff: { scoreMultiplier: 1.05 }, buffDesc: 'Retro! +5% Score', particles: 'pixel' },
-            { id: 'supernova', name: 'Supernova', icon: '🌟', unlockAt: 1000, buff: { scoreMultiplier: 1.08, coinBonus: 1.08 }, buffDesc: 'Epic! +8% Score & Coins', particles: 'supernova' }
+            { id: 'supernova', name: 'Supernova', icon: '🌟', unlockAt: 1000, buff: { scoreMultiplier: 1.08, coinBonus: 1.08 }, buffDesc: 'Epic! +8% Score & Coins', particles: 'supernova' },
+            { id: 'vortex', name: 'Vortex', icon: '🌀', unlockAt: 1500, buff: { magnetRange: 1.2 }, buffDesc: 'Swirling! +20% Magnet', particles: 'vortex' },
+            { id: 'fireworks', name: 'Fireworks', icon: '🎆', unlockAt: 2500, buff: { coinBonus: 1.12, scoreMultiplier: 1.05 }, buffDesc: 'Grand finale! +12% Coins, +5% Score', particles: 'fireworks' },
+            { id: 'blackhole', name: 'Black Hole', icon: '⬛', unlockAt: 4000, buff: { smallerHitbox: 0.85, magnetRange: 1.3 }, buffDesc: 'Consumed! -15% Hitbox, +30% Magnet', particles: 'blackhole' },
+            { id: 'phoenix', name: 'Phoenix', icon: '🔥', unlockAt: 6000, buff: { extraStartLife: 1, scoreMultiplier: 1.1, coinBonus: 1.1 }, buffDesc: 'Reborn! +1 Life, +10% Score & Coins', particles: 'phoenix' }
         ];
         
         const DUCK_TITLES = [
@@ -1415,7 +1435,11 @@
             { id: 'captain', name: 'Captain', icon: '⚓', unlockAt: 300, buff: { speedBoost: 1.05 }, buffDesc: 'In command! +5% Speed' },
             { id: 'legend', name: 'Legend', icon: '🏆', unlockAt: 500, buff: { coinBonus: 1.1 }, buffDesc: 'Legendary! +10% Coins' },
             { id: 'mythical', name: 'Mythical', icon: '🐉', unlockAt: 750, buff: { scoreMultiplier: 1.05, magnetRange: 1.1 }, buffDesc: 'Mythical! +5% Score, +10% Magnet' },
-            { id: 'godquack', name: 'God Quack', icon: '👑', unlockAt: 1000, buff: { scoreMultiplier: 1.1, coinBonus: 1.1, powerUpDuration: 1.1 }, buffDesc: 'Divine! +10% Score, Coins & Power-up' }
+            { id: 'godquack', name: 'God Quack', icon: '👑', unlockAt: 1000, buff: { scoreMultiplier: 1.1, coinBonus: 1.1, powerUpDuration: 1.1 }, buffDesc: 'Divine! +10% Score, Coins & Power-up' },
+            { id: 'champion', name: 'Champion', icon: '🥇', unlockAt: 1500, buff: { scoreMultiplier: 1.08, speedBoost: 1.08 }, buffDesc: 'Elite! +8% Score & Speed' },
+            { id: 'warlord', name: 'Warlord', icon: '⚔️', unlockAt: 2500, buff: { speedBoost: 1.15, smallerHitbox: 0.9 }, buffDesc: 'Fearsome! +15% Speed, -10% Hitbox' },
+            { id: 'archduck', name: 'Archduck', icon: '🦅', unlockAt: 4000, buff: { scoreMultiplier: 1.15, coinBonus: 1.15, magnetRange: 1.15 }, buffDesc: 'Noble! +15% Score, Coins & Magnet' },
+            { id: 'eternal', name: 'Eternal', icon: '♾️', unlockAt: 6000, buff: { scoreMultiplier: 1.2, coinBonus: 1.2, powerUpDuration: 1.2, extraStartLife: 1 }, buffDesc: 'Immortal! +20% Score, Coins & Power-up, +1 Life' }
         ];
         
         // Player customization state
