@@ -1405,7 +1405,11 @@
             { id: 'robot', name: 'Robot', icon: '🤖', unlockAt: 350, buff: { scoreMultiplier: 1.03 }, buffDesc: 'Beep boop! +3% Score', freq: [900, 200], type: 'square' },
             { id: 'whistle', name: 'Whistle', icon: '🎵', unlockAt: 500, buff: { coinBonus: 1.05 }, buffDesc: 'Musical! +5% Coins', freq: [1000, 1400], type: 'sine' },
             { id: 'thunder', name: 'Thunder', icon: '⚡', unlockAt: 750, buff: { speedBoost: 1.05 }, buffDesc: 'Rumble! +5% Speed', freq: [200, 50], type: 'square' },
-            { id: 'magical', name: 'Magical', icon: '✨', unlockAt: 1000, buff: { powerUpDuration: 1.1 }, buffDesc: 'Enchanted! +10% Power-up', freq: [600, 1200], type: 'triangle' }
+            { id: 'magical', name: 'Magical', icon: '✨', unlockAt: 1000, buff: { powerUpDuration: 1.1 }, buffDesc: 'Enchanted! +10% Power-up', freq: [600, 1200], type: 'triangle' },
+            { id: 'laser', name: 'Laser', icon: '🔫', unlockAt: 1500, buff: { speedBoost: 1.08 }, buffDesc: 'Pew pew! +8% Speed', freq: [2000, 100], type: 'sawtooth' },
+            { id: 'dubstep', name: 'Dubstep', icon: '🎧', unlockAt: 2500, buff: { scoreMultiplier: 1.08 }, buffDesc: 'Drop the bass! +8% Score', freq: [150, 80], type: 'square' },
+            { id: 'angel', name: 'Angel', icon: '🪽', unlockAt: 4000, buff: { powerUpDuration: 1.2, coinBonus: 1.1 }, buffDesc: 'Holy! +20% Power-up, +10% Coins', freq: [500, 800], type: 'sine' },
+            { id: 'demonic', name: 'Demonic', icon: '😈', unlockAt: 6000, buff: { scoreMultiplier: 1.12, speedBoost: 1.1, smallerHitbox: 0.95 }, buffDesc: 'Infernal! +12% Score, +10% Speed, -5% Hitbox', freq: [100, 40], type: 'sawtooth' }
         ];
         
         const DUCK_DEATH_EFFECTS = [
