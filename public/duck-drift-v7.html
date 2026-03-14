@@ -2424,6 +2424,16 @@
             comboDisplay.classList.add('hidden');
             hud.classList.remove('hidden');
             speedIndicator.classList.remove('hidden');
+            
+            // Show title in HUD
+            const titleDisplay = document.getElementById('titleDisplay');
+            const selectedTitle = DUCK_TITLES.find(t => t.id === playerCustomization.title);
+            if (selectedTitle && selectedTitle.id !== 'none') {
+                titleDisplay.textContent = `${selectedTitle.icon} ${selectedTitle.name}`;
+                titleDisplay.style.display = 'block';
+            } else {
+                titleDisplay.style.display = 'none';
+            }
 
             updateScore();
             updateSpeedIndicator();
