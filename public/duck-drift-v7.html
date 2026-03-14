@@ -232,6 +232,52 @@
             animation: gearShiftBanner 1.2s ease-out forwards;
         }
         
+        .gear-tutorial-popup {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.92);
+            border: 3px solid #FFD700;
+            border-radius: 16px;
+            padding: 24px 28px;
+            z-index: 200;
+            max-width: 320px;
+            text-align: center;
+            animation: tutorialPop 0.4s ease-out;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.3);
+        }
+        .gear-tutorial-popup.active { display: block; }
+        .gear-tutorial-popup h3 {
+            font-family: 'Fredoka One', cursive;
+            color: #FFD700;
+            font-size: 1.3rem;
+            margin: 0 0 10px 0;
+        }
+        .gear-tutorial-popup p {
+            color: #fff;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin: 0 0 16px 0;
+        }
+        .gear-tutorial-popup button {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 28px;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1rem;
+            color: #333;
+            cursor: pointer;
+            transition: transform 0.15s;
+        }
+        .gear-tutorial-popup button:hover { transform: scale(1.05); }
+        @keyframes tutorialPop {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+        
         @keyframes gearShiftBanner {
             0% { transform: translate(-50%, -50%) scale(0) rotate(-15deg); opacity: 0; }
             15% { transform: translate(-50%, -50%) scale(1.3) rotate(3deg); opacity: 1; }
@@ -1088,6 +1134,11 @@
             
             <div class="speed-indicator hidden gear-1" id="speedIndicator">⚙️ Gear 1</div>
             <div class="gear-shift-overlay" id="gearShiftOverlay"></div>
+            <div class="gear-tutorial-popup" id="gearTutorialPopup">
+                <h3>⚙️ Gear Shift!</h3>
+                <p>The river just shifted gears! Gears change the speed and difficulty randomly — higher gears mean faster currents and more obstacles. Stay sharp!</p>
+                <button id="gearTutorialDismiss">Got it!</button>
+            </div>
             
             <button class="sound-toggle" id="soundToggle">🔊</button>
             
@@ -2311,6 +2362,7 @@
 
         function gameLoop() {
             if (!gameState.isRunning) return;
+            if (gameState.isPaused) return;
             update();
             render();
             gameState.animationFrame = requestAnimationFrame(gameLoop);
@@ -3062,6 +3114,18 @@
             speedIndicator.className = 'speed-indicator ' + gear.class;
         }
 
+        let hasSeenGearTutorial = localStorage.getItem('duckdrift_gear_tutorial') === 'true';
+        const gearTutorialPopup = document.getElementById('gearTutorialPopup');
+        const gearTutorialDismiss = document.getElementById('gearTutorialDismiss');
+        
+        gearTutorialDismiss.addEventListener('click', () => {
+            gearTutorialPopup.classList.remove('active');
+            hasSeenGearTutorial = true;
+            localStorage.setItem('duckdrift_gear_tutorial', 'true');
+            gameState.isPaused = false;
+            if (gameState.isRunning) gameLoop();
+        });
+
         function showGearShift(gearNum) {
             const gearIndex = Math.min(gearNum - 1, GEAR_CONFIG.length - 1);
             const gear = GEAR_CONFIG[gearIndex];
@@ -3072,6 +3136,12 @@
             // Add pop to indicator
             speedIndicator.classList.add('gear-shift');
             setTimeout(() => speedIndicator.classList.remove('gear-shift'), 600);
+            
+            // Show tutorial on first gear shift ever
+            if (!hasSeenGearTutorial) {
+                gameState.isPaused = true;
+                gearTutorialPopup.classList.add('active');
+            }
         }
 
         function endGame() {
