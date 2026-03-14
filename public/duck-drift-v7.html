@@ -1384,11 +1384,47 @@
             { id: 'magic', name: 'Magic', icon: '🔮', color: 'rgba(148,0,211,0.6)', unlockAt: 1000, buff: { scoreMultiplier: 1.15, coinBonus: 1.2, magnetRange: 1.2 }, buffDesc: '+15% Score, +20% Coins & Magnet' }
         ];
         
+        const DUCK_QUACKS = [
+            { id: 'classic', name: 'Classic', icon: '🦆', unlockAt: 0, buff: null, buffDesc: 'Standard quack', freq: [800, 400], type: 'sawtooth' },
+            { id: 'squeaky', name: 'Squeaky', icon: '🧸', unlockAt: 0, buff: null, buffDesc: 'Toy duck squeak', freq: [1200, 600], type: 'sine' },
+            { id: 'deep', name: 'Deep', icon: '🎺', unlockAt: 100, buff: null, buffDesc: 'Booming bass quack', freq: [400, 150], type: 'sawtooth' },
+            { id: 'honk', name: 'Honk', icon: '📯', unlockAt: 200, buff: null, buffDesc: 'Goose-like honk', freq: [350, 250], type: 'square' },
+            { id: 'robot', name: 'Robot', icon: '🤖', unlockAt: 350, buff: { scoreMultiplier: 1.03 }, buffDesc: 'Beep boop! +3% Score', freq: [900, 200], type: 'square' },
+            { id: 'whistle', name: 'Whistle', icon: '🎵', unlockAt: 500, buff: { coinBonus: 1.05 }, buffDesc: 'Musical! +5% Coins', freq: [1000, 1400], type: 'sine' },
+            { id: 'thunder', name: 'Thunder', icon: '⚡', unlockAt: 750, buff: { speedBoost: 1.05 }, buffDesc: 'Rumble! +5% Speed', freq: [200, 50], type: 'square' },
+            { id: 'magical', name: 'Magical', icon: '✨', unlockAt: 1000, buff: { powerUpDuration: 1.1 }, buffDesc: 'Enchanted! +10% Power-up', freq: [600, 1200], type: 'triangle' }
+        ];
+        
+        const DUCK_DEATH_EFFECTS = [
+            { id: 'classic', name: 'Classic', icon: '💦', unlockAt: 0, buff: null, buffDesc: 'Standard splash', particles: 'splash' },
+            { id: 'feathers', name: 'Feathers', icon: '🪶', unlockAt: 0, buff: null, buffDesc: 'Poof of feathers', particles: 'feathers' },
+            { id: 'explosion', name: 'Boom!', icon: '💥', unlockAt: 150, buff: null, buffDesc: 'Dramatic explosion', particles: 'explosion' },
+            { id: 'hearts', name: 'Love Out', icon: '💔', unlockAt: 300, buff: { extraStartLife: 1 }, buffDesc: 'Die with love +1 Life', particles: 'hearts' },
+            { id: 'confetti', name: 'Confetti', icon: '🎊', unlockAt: 450, buff: { coinBonus: 1.05 }, buffDesc: 'Party exit! +5% Coins', particles: 'confetti' },
+            { id: 'ghost', name: 'Ghost', icon: '👻', unlockAt: 600, buff: { smallerHitbox: 0.95 }, buffDesc: 'Spooky! -5% Hitbox', particles: 'ghost' },
+            { id: 'pixel', name: 'Pixel', icon: '👾', unlockAt: 800, buff: { scoreMultiplier: 1.05 }, buffDesc: 'Retro! +5% Score', particles: 'pixel' },
+            { id: 'supernova', name: 'Supernova', icon: '🌟', unlockAt: 1000, buff: { scoreMultiplier: 1.08, coinBonus: 1.08 }, buffDesc: 'Epic! +8% Score & Coins', particles: 'supernova' }
+        ];
+        
+        const DUCK_TITLES = [
+            { id: 'none', name: 'None', icon: '❌', unlockAt: 0, buff: null, buffDesc: 'No title' },
+            { id: 'duckling', name: 'Duckling', icon: '🐣', unlockAt: 0, buff: null, buffDesc: 'Just starting out' },
+            { id: 'swimmer', name: 'Swimmer', icon: '🏊', unlockAt: 50, buff: null, buffDesc: 'Getting the hang of it' },
+            { id: 'navigator', name: 'Navigator', icon: '🧭', unlockAt: 150, buff: { scoreMultiplier: 1.02 }, buffDesc: 'Skilled! +2% Score' },
+            { id: 'captain', name: 'Captain', icon: '⚓', unlockAt: 300, buff: { speedBoost: 1.05 }, buffDesc: 'In command! +5% Speed' },
+            { id: 'legend', name: 'Legend', icon: '🏆', unlockAt: 500, buff: { coinBonus: 1.1 }, buffDesc: 'Legendary! +10% Coins' },
+            { id: 'mythical', name: 'Mythical', icon: '🐉', unlockAt: 750, buff: { scoreMultiplier: 1.05, magnetRange: 1.1 }, buffDesc: 'Mythical! +5% Score, +10% Magnet' },
+            { id: 'godquack', name: 'God Quack', icon: '👑', unlockAt: 1000, buff: { scoreMultiplier: 1.1, coinBonus: 1.1, powerUpDuration: 1.1 }, buffDesc: 'Divine! +10% Score, Coins & Power-up' }
+        ];
+        
         // Player customization state
         let playerCustomization = {
             skin: 'classic',
             hat: 'none',
-            trail: 'none'
+            trail: 'none',
+            quack: 'classic',
+            deathEffect: 'classic',
+            title: 'none'
         };
         
         // Get combined buffs from all equipped cosmetics
