@@ -2362,6 +2362,7 @@
 
         function gameLoop() {
             if (!gameState.isRunning) return;
+            if (gameState.isPaused) return;
             update();
             render();
             gameState.animationFrame = requestAnimationFrame(gameLoop);
